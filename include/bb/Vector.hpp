@@ -26,7 +26,7 @@ public:
     { std::copy(other.begin(), other.end(), beg_); }
 
     Vector& operator=(const Vector& other) {
-        if (this == &other) {
+        if (this != &other) {
             // preserve elements incase a exception is thrown
             T* container{new T[other.size()]};
             std::copy(other.begin(), other.end(), container);
@@ -38,6 +38,31 @@ public:
             cap_ = end_;
         }
         return *this;
+    }
+
+    Vector(Vector&& other)
+        : beg_{other.beg_}
+        , end_{other.end_}
+        , cap_{other.cap_}
+    {
+        other.beg_ = nullptr;
+        other.end_ = nullptr;
+        other.cap_ = nullptr;
+    }
+
+    Vector& operator=(Vector&& other) {
+        if (this != &other) {
+            delete[] beg_;
+
+            beg_ = other.beg_;
+            end_ = other.end_;
+            cap_ = other.cap_;
+
+            other.beg_ = nullptr;
+            other.end_ = nullptr;
+            other.cap_ = nullptr;
+        }
+        return this*;
     }
 
     ~Vector() { delete[] beg_; }
