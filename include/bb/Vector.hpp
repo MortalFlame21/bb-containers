@@ -71,7 +71,11 @@ public:
     // iterators
     T* begin() const { return beg_; }
 
+    T* const begin() { return beg_; }
+
     T* end() const { return end_; }
+
+    T* const end() { return end_; }
 
     // element access
     T operator[](size_t i) const { return beg_[i]; }
