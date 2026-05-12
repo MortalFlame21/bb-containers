@@ -68,15 +68,6 @@ public:
 
     ~Vector() { delete[] beg_; }
 
-    // iterators
-    T* begin() const { return beg_; }
-
-    T* const begin() { return beg_; }
-
-    T* end() const { return end_; }
-
-    T* const end() { return end_; }
-
     // element access
     T operator[](size_t i) const { return beg_[i]; }
 
@@ -87,12 +78,70 @@ public:
         return beg_[i];
     }
 
+    T& at(size_t i) {
+        if (i >= size()) throw std::out_of_range{};
+        return beg_[i];
+    }
+
+    // iterators
+    T* begin() const { return beg_; }
+
+    T* const begin() { return beg_; }
+
+    T* end() const { return end_; }
+
+    T* const end() { return end_; }
+
     // size and capacity
-    size_t size() { return end_ - beg_; }
+    size_t size() const { return end_ - beg_; }
 
-    size_t capacity() { return cap_ - beg_; }
+    size_t capacity() const { return cap_ - beg_; }
 
-    bool empty() { return size() == 0; }
+    bool empty() const { return size() == 0; }
+
+    void resize(size_t new_size) {
+        if (size() < new_size) {
+            Vector<T> container(new_size);
+            std::copy(begin(), end(), container.begin());
+            // use swap to simulate a resize
+            swap(*this, container);
+        }
+    }
+
+    void reserve(size_t new_capacity) {
+        if (capacity() < new_capacity) {
+            T* container{new T[new_capacity]};
+            std::copy(begin(), end(), container);
+
+            cap_ = container + new_capacity;
+            end_ = container + size(); // using previous size
+            delete[] beg_;
+            beg_ = container;
+        }
+    }
+
+    // modifiers
+    void push_back(const T& e) {
+        if (capacity() <= size())
+            reserve(empty() ? 8 : 2 * size());
+        beg_[end_++] = e;
+    }
+
+    void pop_back() {
+        beg_[size() - 1] = T{};
+        --end;
+    }
+
+    void clear() {
+        delete[] beg_;
+        beg_ = nullptr;
+        end_ = nullptr;
+        cap_ = nullptr;
+    }
+
+    void swap(Vector& other) { std::swap(*this, other); }
+
+    friend void swap(Vector& a, Vector& b) { std::swap(a, b); }
 
 private:
     T* beg_{};
