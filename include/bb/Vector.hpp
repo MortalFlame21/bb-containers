@@ -1,11 +1,12 @@
 #include <algorithm>
 #include <initializer_list>
+#include <stdexcept>
 
 namespace bb {
 template<typename T>
 class Vector {
 public:
-    // ctor, move and destruction
+    // ctor, move and dtor
     Vector() = default;
 
     explicit Vector(size_t size)
@@ -62,7 +63,7 @@ public:
             other.end_ = nullptr;
             other.cap_ = nullptr;
         }
-        return this*;
+        return *this;
     }
 
     ~Vector() { delete[] beg_; }
@@ -73,11 +74,22 @@ public:
     T* end() const { return end_; }
 
     // element access
+    T operator[](size_t i) const { return beg_[i]; }
+
+    T& operator[](size_t i) { return beg_[i]; }
+
+    T at(size_t i) const {
+        if (i >= size()) throw std::out_of_range{};
+        return beg_[i];
+    }
 
     // size and capacity
     size_t size() { return end_ - beg_; }
+
     size_t capacity() { return cap_ - beg_; }
+
     bool empty() { return size() == 0; }
+
 private:
     T* beg_{};
     T* end_{};
