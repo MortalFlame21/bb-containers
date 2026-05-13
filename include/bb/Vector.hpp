@@ -10,18 +10,18 @@ public:
     Vector() = default;
 
     explicit Vector(size_t size)
-        : beg_{new T[size]}
+        : beg_{new T[size]{}}
         , end_{beg_ + size}
         , cap_{end_} {}
 
     Vector(std::initializer_list<T> list)
-        : beg_{new T[list.size()]}
+        : beg_{new T[list.size()]{}}
         , end_{beg_ + list.size()}
         , cap_{end_}
     { std::copy(list.begin(), list.end(), beg_); }
 
     Vector(const Vector& other)
-        : beg_{new T[other.size()]}
+        : beg_{new T[other.size()]{}}
         , end_{beg_ + other.size()}
         , cap_{end_}
     { std::copy(other.begin(), other.end(), beg_); }
