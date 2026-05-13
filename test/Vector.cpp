@@ -113,3 +113,36 @@ TEST_CASE("A reserved vector will have same size", "[vector]") {
         REQUIRE_THAT(v, Catch::Matchers::RangeEquals({1, 2, 3, 4, 5}));
     }
 }
+
+TEST_CASE("Popped back elements decrease size", "[vector]") {
+    // GIVEN
+    bb::Vector<int> v{1, 2, 3};
+
+    // WHEN
+    v.pop_back();
+    v.pop_back();
+
+    // THEN
+    REQUIRE(v.size() == 1);
+
+    SECTION("When empty then resized elements are default initialised", "[vector]") {
+        // GIVEN
+        v.pop_back();
+        REQUIRE(v.empty());
+
+        // WHEN
+        v.resize(2);
+
+        // THEN
+        REQUIRE_THAT(v, Catch::Matchers::RangeEquals({int{}, int{}}));
+    }
+
+    SECTION("When empty and popped back std::out_of_range exception thrown", "[vector]") {
+        // GIVEN
+        v.pop_back();
+        REQUIRE(v.empty());
+
+        // WHEN and THEN
+        REQUIRE_THROWS_AS(v.pop_back(), std::out_of_range);
+    }
+}
