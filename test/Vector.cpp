@@ -161,3 +161,23 @@ TEST_CASE("Push back can increase capacity can increase if require reserve", "[v
     CHECK(v.size() == 4);
     CHECK(v.capacity() >= 4);
 }
+
+TEST_CASE("Clear clears contents successfully", "[vector]") {
+    // GIVEN
+    bb::Vector<int> v(3);
+
+    // WHEN
+    v.clear();
+
+    // THEN
+    CHECK(v.empty());
+
+    SECTION("Push element element on a cleared vector to increase size", "[vectors]") {
+        // WHEN
+        v.push_back(1);
+
+        // THEN
+        CHECK(v.size() == 1);
+        CHECK(v.capacity() >= 1);
+    }
+}
