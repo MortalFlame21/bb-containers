@@ -90,3 +90,26 @@ TEST_CASE("A same resized vector will have no effect", "[vector]") {
         REQUIRE(v.size() == 1);
     }
 }
+
+TEST_CASE("A reserved vector will have same size", "[vector]") {
+    // GIVEN
+    bb::Vector<int> v{1, 2, 3, 4, 5};
+
+    // WHEN
+    v.reserve(10);
+
+    // THEN
+    REQUIRE(v.size() == 5);
+    REQUIRE(v.capacity() == 10);
+    REQUIRE_THAT(v, Catch::Matchers::RangeEquals({1, 2, 3, 4, 5}));
+
+    SECTION("A lesser capacity and size has no effect", "[vector]") {
+        // WHEN
+        v.reserve(3);
+
+        // THEN
+        REQUIRE(v.size() == 5);
+        REQUIRE(v.capacity() == 10);
+        REQUIRE_THAT(v, Catch::Matchers::RangeEquals({1, 2, 3, 4, 5}));
+    }
+}
