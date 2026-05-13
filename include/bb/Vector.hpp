@@ -124,12 +124,13 @@ public:
     void push_back(const T& e) {
         if (capacity() <= size())
             reserve(empty() ? 8 : 2 * size());
-        beg_[end_++] = e;
+        beg_[size()] = e;
+        ++end_;
     }
 
     void pop_back() {
         beg_[size() - 1] = T{};
-        --end;
+        --end_;
     }
 
     void clear() {
