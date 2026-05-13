@@ -100,11 +100,14 @@ public:
     bool empty() const { return size() == 0; }
 
     void resize(size_t new_size) {
-        if (size() < new_size) {
+        if (size() > new_size) {
+            end_ -= size() - new_size;
+        }
+        else if (size() < new_size) {
             Vector<T> container(new_size);
             std::copy(begin(), end(), container.begin());
             // use swap to simulate a resize
-            swap(*this, container);
+            swap(container);
         }
     }
 
