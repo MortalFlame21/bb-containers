@@ -60,3 +60,33 @@ TEST_CASE("A vector given a initializer list copies the contents", "[vector]") {
     REQUIRE(v.size() == 4);
     REQUIRE_THAT(v, Catch::Matchers::RangeEquals({1, 2, 3, 4}));
 }
+
+TEST_CASE("A same resized vector will have no effect", "[vector]") {
+    // GIVEN
+    bb::Vector<int> v(3);
+
+    // THEN
+    REQUIRE(v.size() == 3);
+
+    // WHEN
+    v.resize(3);
+
+    // THEN
+    REQUIRE(v.size() == 3);
+
+    SECTION("A greater size increase size", "[vector]") {
+        // WHEN
+        v.resize(5);
+
+        // THEN
+        REQUIRE(v.size() == 5);
+    }
+
+    SECTION("A lesser size decrease size", "[vector]") {
+        // WHEN
+        v.resize(1);
+
+        // THEN
+        REQUIRE(v.size() == 1);
+    }
+}
