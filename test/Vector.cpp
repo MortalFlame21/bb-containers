@@ -146,3 +146,18 @@ TEST_CASE("Popped back elements decrease size", "[vector]") {
         REQUIRE_THROWS_AS(v.pop_back(), std::out_of_range);
     }
 }
+
+TEST_CASE("Push back can increase capacity can increase if require reserve", "[vector]") {
+    // GIVEN
+    bb::Vector<int> v(3);
+
+    // THEN
+    CHECK(v.capacity() == 3);
+
+    // WHEN
+    v.push_back({});
+
+    // THEN
+    CHECK(v.size() == 4);
+    CHECK(v.capacity() >= 4);
+}
