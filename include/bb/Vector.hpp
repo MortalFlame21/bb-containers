@@ -74,12 +74,12 @@ public:
     T& operator[](size_t i) { return beg_[i]; }
 
     T at(size_t i) const {
-        if (i >= size()) throw std::out_of_range{};
+        if (i >= size()) throw std::out_of_range{"Vector::at: i >= Vector::size"};
         return beg_[i];
     }
 
     T& at(size_t i) {
-        if (i >= size()) throw std::out_of_range{};
+        if (i >= size()) throw std::out_of_range{"Vector::at: i >= Vector::size"};
         return beg_[i];
     }
 
@@ -132,7 +132,9 @@ public:
     }
 
     void pop_back() {
-        beg_[size() - 1] = T{};
+        if (empty())
+            throw std::out_of_range{"Vector::pop_back: Vector::empty == true"};
+        beg_[size() - 1].~T();
         --end_;
     }
 
