@@ -162,7 +162,7 @@ TEST_CASE("Push back can increase capacity can increase if require reserve", "[v
     CHECK(v.capacity() >= 4);
 }
 
-TEST_CASE("Clear clears contents successfully", "[vector]") {
+TEST_CASE("Vector::clear clears contents successfully", "[vector]") {
     // GIVEN
     bb::Vector<int> v(3);
 
@@ -180,4 +180,75 @@ TEST_CASE("Clear clears contents successfully", "[vector]") {
         CHECK(v.size() == 1);
         CHECK(v.capacity() >= 1);
     }
+}
+
+TEST_CASE("Copy constructor on source to destination are different objects", "[vector]") {
+	// GIVEN
+	bb::Vector<int> vs{1, 2, 3};
+	
+	// WHEN
+	auto vd{vs};
+
+	// THEN
+	REQUIRE(vs.begin() != vd.begin());
+	REQUIRE_THAT(vd, Catch::Matchers::RangeEquals(vs));
+}
+
+TEST_CASE("Copy assignment on same objects ignores copy", "[vector]") {
+	// GIVEN
+	bb::Vector<int> v{1, 2, 3};
+	auto begin{v.begin()};
+	
+	// WHEN
+	v = v;
+
+	// THEN
+	REQUIRE(begin == v.begin());
+	REQUIRE_THAT(v, Catch::Matchers::RangeEquals({1, 2, 3}));
+}
+
+TEST_CASE("Copy assignment accurately copies all elements", "[vector]") {
+	// GIVEN
+	bb::Vector<int> vs{1, 2, 3};
+	bb::Vector<int> vd{};
+	auto begin{vd.begin()};
+	
+	// WHEN
+	vd = vs;
+
+	// THEN
+	REQUIRE(begin != vd.begin());
+	REQUIRE(vs.begin() != vd.begin());
+	REQUIRE_THAT(vd, Catch::Matchers::RangeEquals({1, 2, 3}));
+}
+
+TEST_CASE("Move constructor has one invalidated pointer to moved", "[vector]") {
+	// GIVEN
+	bb::Vector<int> vs{1, 2, 3};
+	auto begin{vs.begin()};
+	
+	// WHEN
+	auto vd{std::move(vs)};
+
+	// THEN
+	REQUIRE(vs.begin() != vd.begin());
+	REQUIRE(vs.begin() == nullptr);
+	REQUIRE(begin == vd.begin());
+	REQUIRE_THAT(vd, Catch::Matchers::RangeEquals({1, 2, 3}));
+}
+
+TEST_CASE("Move assignment invalidates the to be moved source", "[vector]") {
+	// GIVEN
+	bb::Vector<int> vs{1, 2, 3};
+	bb::Vector<int> vd{};
+	auto begin{vs.begin()};
+	
+	// WHEN
+	vd = std::move(vs);
+
+	// THEN
+	REQUIRE(vs.begin() != vd.begin());
+	REQUIRE(vs.begin() == nullptr);
+	REQUIRE(begin == vd.begin());
+	REQUIRE_THAT(vd, Catch::Matchers::RangeEquals({1, 2, 3}));
 }
