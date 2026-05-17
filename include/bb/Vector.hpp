@@ -106,7 +106,7 @@ public:
 
     size_type capacity() const { return cap_ - beg_; }
 
-    bool empty() const { return size() == 0; }
+    bool empty() const { return begin() == end(); }
 
     void resize(size_t new_size) {
         if (size() > new_size) {
