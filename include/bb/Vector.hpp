@@ -78,16 +78,16 @@ public:
     ~Vector() { delete[] beg_; }
 
     // element access
-    const_reference operator[](size_t i) const { return beg_[i]; }
+    const_reference operator[](size_type i) const { return beg_[i]; }
 
-    reference operator[](size_t i) { return beg_[i]; }
+    reference operator[](size_type i) { return beg_[i]; }
 
-    const_reference at(size_t i) const {
+    const_reference at(size_type i) const {
         if (i >= size()) throw std::out_of_range{"Vector::at: i >= Vector::size"};
         return beg_[i];
     }
 
-    reference at(size_t i) {
+    reference at(size_type i) {
         if (i >= size()) throw std::out_of_range{"Vector::at: i >= Vector::size"};
         return beg_[i];
     }
@@ -108,7 +108,7 @@ public:
 
     bool empty() const { return begin() == end(); }
 
-    void resize(size_t new_size) {
+    void resize(size_type new_size) {
         if (size() > new_size) {
             end_ -= size() - new_size;
         }
@@ -120,7 +120,7 @@ public:
         }
     }
 
-    void reserve(size_t new_capacity) {
+    void reserve(size_type new_capacity) {
         if (capacity() < new_capacity) {
             T* container{new T[new_capacity]};
             std::copy(begin(), end(), container);
