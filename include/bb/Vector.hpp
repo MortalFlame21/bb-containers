@@ -6,6 +6,15 @@ namespace bb {
 template<typename T>
 class Vector {
 public:
+    // typedefs
+    using value_type = T;
+    using reference = T&;
+    using const_reference = const T&;
+    using iterator = T*;
+    using const_iterator = T* const;
+    using diff_type = std::ptrdiff_t;
+    using size_type = std::size_t;
+
     // ctor, move and dtor
     Vector() = default;
 
@@ -69,33 +78,33 @@ public:
     ~Vector() { delete[] beg_; }
 
     // element access
-    T operator[](size_t i) const { return beg_[i]; }
+    const_reference operator[](size_t i) const { return beg_[i]; }
 
-    T& operator[](size_t i) { return beg_[i]; }
+    reference operator[](size_t i) { return beg_[i]; }
 
-    T at(size_t i) const {
+    const_reference at(size_t i) const {
         if (i >= size()) throw std::out_of_range{"Vector::at: i >= Vector::size"};
         return beg_[i];
     }
 
-    T& at(size_t i) {
+    reference at(size_t i) {
         if (i >= size()) throw std::out_of_range{"Vector::at: i >= Vector::size"};
         return beg_[i];
     }
 
     // iterators
-    T* begin() const { return beg_; }
+    iterator begin() const { return beg_; }
 
-    T* const begin() { return beg_; }
+    const_iterator begin() { return beg_; }
 
-    T* end() const { return end_; }
+    iterator end() const { return end_; }
 
-    T* const end() { return end_; }
+    const_iterator end() { return end_; }
 
     // size and capacity
-    size_t size() const { return end_ - beg_; }
+    size_type size() const { return end_ - beg_; }
 
-    size_t capacity() const { return cap_ - beg_; }
+    size_type capacity() const { return cap_ - beg_; }
 
     bool empty() const { return size() == 0; }
 
