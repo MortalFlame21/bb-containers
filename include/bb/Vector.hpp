@@ -3,6 +3,9 @@
 #include <stdexcept>
 
 namespace bb {
+/// @brief A dynamic array of type `T`, a Vector. Aiming to mimic
+/// [`std::vector`](https://en.cppreference.com/cpp/container/vector).
+/// @tparam T
 template<typename T>
 class Vector {
 public:
