@@ -154,13 +154,14 @@ public:
     /// @post `size() >= new_size`
     void resize(size_type new_size) {
         if (size() > new_size) {
-            end_ -= size() - new_size;
+            while(size() != new_size)
+                (end_--)->~T();
         }
         else if (size() < new_size) {
-            Vector<T> container(new_size);
-            std::copy(begin(), end(), container.begin());
-            // use swap to simulate a resize
-            swap(container);
+            if (capacity() < new_size)
+                reserve(new_size);
+            while(size() != new_size)
+                *(end_++) = T();
         }
     }
 
@@ -193,6 +194,9 @@ public:
         ++end_;
     }
 
+    /// @brief Inserts element `e` before `pos` of Vector container.
+    void insert(const_iterator pos, const T& e) { }
+
     /// @brief Pops the last element from the Vector container.
     /// @details if `empty()` a `std::out_of_range` is thrown.
     /// @post `size()` is decreased by one.
@@ -202,6 +206,18 @@ public:
         beg_[size() - 1].~T();
         --end_;
     }
+
+    /// @brief Erases element at `pos` at Vector container.
+    void erase(iterator pos) { }
+
+    // /// @brief Erases element at `pos` at Vector container.
+    // void erase(const_iterator pos) { }
+
+    // /// @brief Erases element in range [`f`, `l`) at Vector container.
+    // void erase(iterator f, iterator l) { }
+
+    // /// @brief Erases element in range [`f`, `l`) at Vector container.
+    // void erase(const_iterator f, const_iterator l) { }
 
     /// @brief clears the entire Vector container.
     /// @post `begin()` is invalidated.
