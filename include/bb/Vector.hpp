@@ -16,25 +16,32 @@ public:
     using size_type = std::size_t;
 
     // ctor, move and dtor
+    /// @brief Initialise default Vector container.
     Vector() = default;
 
+    /// @brief Initialise Vector container to `size`.
+    /// @param size
     explicit Vector(size_t size)
         : beg_{new T[size]{}}
         , end_{beg_ + size}
         , cap_{end_} {}
 
+    /// @brief Initialise Vector container with contents of `list`.
+    /// @param list
     Vector(std::initializer_list<T> list)
         : beg_{new T[list.size()]{}}
         , end_{beg_ + list.size()}
         , cap_{end_}
     { std::copy(list.begin(), list.end(), beg_); }
 
+    /// @brief Initialise Vector container to copy Vector `other`.
     Vector(const Vector& other)
         : beg_{new T[other.size()]{}}
         , end_{beg_ + other.size()}
         , cap_{end_}
     { std::copy(other.begin(), other.end(), beg_); }
 
+    /// @brief Copy assign Vector container to copy Vector `other`.
     Vector& operator=(const Vector& other) {
         if (this != &other) {
             // preserve elements incase a exception is thrown
@@ -50,6 +57,8 @@ public:
         return *this;
     }
 
+    /// @brief Move contents of Vector `other` to initialise Vector.
+    /// @post `other` is invalidated.
     Vector(Vector&& other)
         : beg_{other.beg_}
         , end_{other.end_}
@@ -60,6 +69,8 @@ public:
         other.cap_ = nullptr;
     }
 
+    /// @brief Move assign of Vector `other` to initialise Vector.
+    /// @post `other` is invalidated.
     Vector& operator=(Vector&& other) {
         if (this != &other) {
             delete[] beg_;
