@@ -1,6 +1,8 @@
-#include <algorithm>
-#include <initializer_list>
-#include <stdexcept>
+#include <algorithm> // std::copy
+#include <initializer_list> // std::initializer_list
+#include <stdexcept> // std::out_of_range
+
+#include "Iterator.hpp"
 
 namespace bb {
 /// @brief A dynamic array of type `T`, a Vector. Aiming to mimic
@@ -13,8 +15,8 @@ public:
     using value_type = T;
     using reference = T&;
     using const_reference = const T&;
-    using iterator = T*;
-    using const_iterator = T* const;
+    using iterator = RandomAccessIterator<T>;
+    using const_iterator = iterator const;
     using diff_type = std::ptrdiff_t;
     using size_type = std::size_t;
 
@@ -117,19 +119,19 @@ public:
     // iterators
     /// @brief Begin iterator access.
     /// @return Begin `iterator`.
-    iterator begin() const { return beg_; }
+    iterator begin() { return iterator(beg_); }
 
     /// @brief Begin const iterator access.
     /// @return Begin `const_iterator`.
-    const_iterator begin() { return beg_; }
+    const_iterator begin() const { return const_iterator(beg_); }
 
     /// @brief End iterator access.
     /// @return End `iterator`.
-    iterator end() const { return end_; }
+    iterator end() { return iterator(end_); }
 
     /// @brief End const_iterator access.
     /// @return End `const_iterator`.
-    const_iterator end() { return end_; }
+    const_iterator end() const { return const_iterator(end_); }
 
     // size and capacity
     /// @brief Returns how many elements Vector container can contain.
