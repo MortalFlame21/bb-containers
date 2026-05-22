@@ -36,9 +36,9 @@ public:
     /// @return `value_type`
     value_type operator*() const { return *ptr_; }
 
-    /// @brief Const dereference operator.
+    /// @brief Dereference operator.
     /// @return `reference`
-    reference operator*() const { return *ptr_; }
+    reference operator*() { return *ptr_; }
 
     /// @brief Arrow operator.
     /// @return `pointer`
