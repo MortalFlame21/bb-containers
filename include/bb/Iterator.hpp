@@ -31,13 +31,18 @@ public:
     // ctor
     RandomAccessIterator(pointer ptr) : ptr_{ptr} {};
 
+    // operations
     /// @brief Dereference operator.
     /// @return `value_type`
-    value_type operator*() { return *ptr_; }
+    value_type operator*() const { return *ptr_; }
+
+    /// @brief Const dereference operator.
+    /// @return `reference`
+    reference operator*() const { return *ptr_; }
 
     /// @brief Arrow operator.
     /// @return `pointer`
-    pointer operator->() { return ptr_; }
+    pointer operator->() const { return ptr_; }
 
     /// @brief Pre-increment operator.
     /// @return `RandomAccessIterator` reference.
@@ -71,18 +76,34 @@ public:
 
     /// @brief Addition. Increment Iterator by `n`.
     /// @param n
-    /// @return `RandomAccessIterator` reference.
-    RandomAccessIterator& operator+(size_type n) {
-        ptr_ += n;
-        return *this;
+    /// @return `RandomAccessIterator` incremented by n.
+    RandomAccessIterator operator+(difference_type n) const {
+        return RandomAccessIterator(ptr_ + n);
     }
 
-    /// @brief Addition. Decrement Iterator by `n`.
+    /// @brief Subtract. Decrement Iterator by `n`.
     /// @param n
-    /// @return `RandomAccessIterator` reference.
-    RandomAccessIterator& operator-(size_type n) {
-        ptr_ -= n;
-        return *this;
+    /// @return `RandomAccessIterator` decremented by n.
+    RandomAccessIterator operator-(difference_type n) const {
+        return RandomAccessIterator(ptr_ - n);
+    }
+
+    /// @brief Addition. Sum of RandomAccessIterator of a and b.
+    /// @param a
+    /// @param b
+    /// @return `RandomAccessIterator` sum of a and b.
+    friend difference_type
+        operator+(RandomAccessIterator a, RandomAccessIterator b) {
+        return a.ptr_ + b.ptr_;
+    }
+
+    /// @brief Subtract. Difference of RandomAccessIterator of a and b.
+    /// @param a
+    /// @param b
+    /// @return `RandomAccessIterator` difference of a and b.
+    friend difference_type
+        operator-(RandomAccessIterator a, RandomAccessIterator b) {
+        return a.ptr_ - b.ptr_;
     }
 
     /// @brief Equality of a and b.
