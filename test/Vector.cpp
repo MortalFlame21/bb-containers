@@ -185,7 +185,7 @@ TEST_CASE("Vector::clear clears contents successfully", "[vector]") {
 TEST_CASE("Copy constructor on source to destination are different objects", "[vector]") {
 	// GIVEN
 	bb::Vector<int> vs{1, 2, 3};
-	
+
 	// WHEN
 	auto vd{vs};
 
@@ -198,7 +198,7 @@ TEST_CASE("Copy assignment on same objects ignores copy", "[vector]") {
 	// GIVEN
 	bb::Vector<int> v{1, 2, 3};
 	auto begin{v.begin()};
-	
+
 	// WHEN
 	v = v;
 
@@ -212,7 +212,7 @@ TEST_CASE("Copy assignment accurately copies all elements", "[vector]") {
 	bb::Vector<int> vs{1, 2, 3};
 	bb::Vector<int> vd{};
 	auto begin{vd.begin()};
-	
+
 	// WHEN
 	vd = vs;
 
@@ -226,7 +226,7 @@ TEST_CASE("Move constructor has one invalidated pointer to moved", "[vector]") {
 	// GIVEN
 	bb::Vector<int> vs{1, 2, 3};
 	auto begin{vs.begin()};
-	
+
 	// WHEN
 	auto vd{std::move(vs)};
 
@@ -242,7 +242,7 @@ TEST_CASE("Move assignment invalidates the to be moved source", "[vector]") {
 	bb::Vector<int> vs{1, 2, 3};
 	bb::Vector<int> vd{};
 	auto begin{vs.begin()};
-	
+
 	// WHEN
 	vd = std::move(vs);
 
@@ -251,4 +251,76 @@ TEST_CASE("Move assignment invalidates the to be moved source", "[vector]") {
 	REQUIRE(vs.begin() == nullptr);
 	REQUIRE(begin == vd.begin());
 	REQUIRE_THAT(vd, Catch::Matchers::RangeEquals({1, 2, 3}));
+}
+
+TEST_CASE("Erase using iterators removes elements in correct position", "[vector]") {
+    // GIVEN
+	bb::Vector<int> v{1, 2, 3};
+
+    // WHEN
+    v.erase(v.begin() + 1);
+
+    // THEN
+	REQUIRE_THAT(v, Catch::Matchers::RangeEquals({1, 3}));
+
+    // WHEN
+    v.erase(v.end() - 1);
+
+    // THEN
+    REQUIRE_THAT(v, Catch::Matchers::RangeEquals({1}));
+}
+
+TEST_CASE("Insert in middle pushes before elements to the end", "[vector]") {
+    // GIVEN
+	bb::Vector<int> v{1, 2, 3};
+
+    // WHEN
+    v.insert(v.begin() + 1, 2);
+
+    // THEN
+    REQUIRE_THAT(v, Catch::Matchers::RangeEquals({1, 2, 2, 3}));
+
+    // WHEN
+    v.insert(v.begin() + 3, 3);
+
+    // THEN
+    REQUIRE_THAT(v, Catch::Matchers::RangeEquals({1, 2, 2, 3, 3}));
+}
+
+TEST_CASE("Insert before other elements pushes elements correctly", "[vector]") {
+    // GIVEN
+	bb::Vector<int> v{1, 2, 3};
+
+    // WHEN
+    v.insert(v.begin(), 0);
+    v.insert(v.begin() + v.size() - 1, 4);
+    v.insert(v.begin() + v.size() - 1, 5);
+
+    // THEN
+    REQUIRE_THAT(v, Catch::Matchers::RangeEquals({0, 1, 2, 4, 5, 3}));
+}
+
+TEST_CASE("Insert at end inserts elements correctly", "[vector]") {
+    // GIVEN
+	bb::Vector<int> v{1, 2, 3};
+
+    // WHEN
+    v.insert(v.end(), 4);
+    v.insert(v.end(), 5);
+
+    // THEN
+    REQUIRE_THAT(v, Catch::Matchers::RangeEquals({1, 2, 3, 4, 5}));
+}
+
+TEST_CASE("Insert with no elements at begining increases Vector size.", "[vector]") {
+    // GIVEN
+    bb::Vector<int> v{};
+
+    // WHEN
+    v.insert(v.begin(), 1);
+    v.insert(v.begin(), 2);
+    v.insert(v.begin(), 3);
+
+    // THEN
+    REQUIRE_THAT(v, Catch::Matchers::RangeEquals({3, 2, 1}));
 }
