@@ -1,6 +1,7 @@
 #include <algorithm> // std::copy
 #include <initializer_list> // std::initializer_list
 #include <stdexcept> // std::out_of_range
+#include <memory> // std::destroy_n
 
 #include "Iterator.hpp"
 
@@ -231,15 +232,21 @@ public:
     /// @brief Erases element at `pos` at Vector container.
     /// @param pos
     void erase(iterator pos) {
-        if (pos + 1 != end())
-            std::copy(pos + 1, end(), pos);
-        --end_;
+        erase(pos, pos + 1);
     }
 
-    // /// @brief Erases elements in range [`f`, `l`) at Vector container.
-    // /// @param f
-    // /// @param l
-    // void erase(iterator f, iterator l)
+    /// @brief Erases elements in range [`f`, `l`) at Vector container.
+    /// @param f
+    /// @param l
+    void erase(iterator f, iterator l) {
+        difference_type i{f - begin()};
+        difference_type n{l - f};
+        std::destroy_n(begin() + i, n);
+        // shift elements to fill deleted n elements
+        if (begin() + i + n != end())
+            std::copy(begin() + i + n, end(), begin() + i);
+        end_ -= n;
+    }
 
     /// @brief clears the entire Vector container.
     /// @post `begin()` is invalidated.

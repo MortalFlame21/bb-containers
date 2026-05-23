@@ -346,3 +346,14 @@ TEST_CASE("Insert of extra 2 elements at the end increases Vector", "[vector]") 
     // THEN
     REQUIRE_THAT(v, Catch::Matchers::RangeEquals({1, 2, 2, 2, 2}));
 }
+
+TEST_CASE("Erasing element positions removes elements correctly", "[vector]") {
+    // GIVEN
+    bb::Vector<int> v{1, 69, 420, 67, 21, 2, 3, 4, 5};
+
+    // WHEN
+    v.erase(v.begin() + 1, v.begin() + 5);
+
+    // THEN
+    REQUIRE_THAT(v, Catch::Matchers::RangeEquals({1, 2, 3, 4, 5}));
+}
