@@ -3,6 +3,10 @@
 #include <catch2/generators/catch_generators.hpp>
 #include <catch2/matchers/catch_matchers_range_equals.hpp>
 
+// don't use brace initialization for GENERATE()
+#include <catch2/generators/catch_generators.hpp>
+#include <catch2/matchers/catch_matchers_range_equals.hpp>
+
 #include "bb/Vector.hpp"
 
 TEST_CASE("A default constructed vector is empty", "[vector]") {

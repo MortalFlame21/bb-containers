@@ -29,6 +29,7 @@ public:
     /// @param size
     explicit Vector(size_t size)
         : beg_{new T[size]{}}
+        : beg_{new T[size]{}}
         , end_{beg_ + size}
         , cap_{end_} {}
 
