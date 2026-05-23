@@ -196,32 +196,27 @@ public:
         ++end_;
     }
 
-
-    // TODO:
-    // rebuild with debug flags
-    // gdb ./build/test/container_tests "Insert using iterators inserts elements in correct position"
-
-    // std::move_backward(begin() + i, end() - 1, end());??
-
     /// @brief Inserts element `e` before `pos` of Vector container.
     /// @param pos
     /// @param e
     void insert(iterator pos, const T& e) {
-        difference_type i{pos - begin()}; // find offset
-        if (capacity() <= size())
-            reserve(2 * capacity() + 1);
-        // shift elements after to-be-inserted `e` to fit
-        if (begin() + i != end())
-            std::move_backward(begin() + i, end(), end() + 1);
-        *(begin() + i) = e;
-        ++end_;
+        insert(pos, 1, e);
     }
 
-    // /// @brief Inserts element `e` in range [`f`, 'l') of Vector container.
-    // /// @param f
-    // /// @param l
-    // /// @param e
-    // void insert(iterator f, iterator l, const T& e)
+    /// @brief Inserts count element `e` in Vector before pos.
+    /// @param pos
+    /// @param count
+    /// @param e
+    void insert(iterator pos, size_type count, const T& e) {
+        difference_type i{pos - begin()}; // find offset
+        if (capacity() <= size())
+            reserve(empty() ? count + 1 : 2 * capacity() + count);
+        // shift elements after to-be-inserted elements to fit
+        if (begin() + i != end())
+            std::move_backward(begin() + i, end(), end() + count);
+        std::fill(begin() + i, begin() + i + count, e);
+        end_ += count;
+    }
 
     /// @brief Pops the last element from the Vector container.
     /// @details if `empty()` a `std::out_of_range` is thrown.
