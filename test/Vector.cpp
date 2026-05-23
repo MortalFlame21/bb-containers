@@ -324,3 +324,25 @@ TEST_CASE("Insert with no elements at begining increases Vector size.", "[vector
     // THEN
     REQUIRE_THAT(v, Catch::Matchers::RangeEquals({3, 2, 1}));
 }
+
+TEST_CASE("Inserted elements with a count are correctly in order", "[vector]") {
+    // GIVEN
+    bb::Vector<int> v{1, 1, 1};
+
+    // WHEN
+    v.insert(v.begin() + 1, 2, 3);
+
+    // THEN
+    REQUIRE_THAT(v, Catch::Matchers::RangeEquals({1, 3, 3, 1, 1}));
+}
+
+TEST_CASE("Insert of extra 2 elements at the end increases Vector", "[vector]") {
+    // GIVEN
+    bb::Vector<int> v{1};
+
+    // WHEN
+    v.insert(v.end(), 4, 2);
+
+    // THEN
+    REQUIRE_THAT(v, Catch::Matchers::RangeEquals({1, 2, 2, 2, 2}));
+}
