@@ -88,6 +88,22 @@ public:
         return RandomAccessIterator(ptr_ - n);
     }
 
+    /// @brief Addition assignment. Increment Iterator by `n`.
+    /// @param n
+    /// @return `RandomAccessIterator` reference.
+    RandomAccessIterator& operator+=(difference_type n) {
+        ptr_ += n;
+        return *this;
+    }
+
+    /// @brief Subtraction assignment. Decrement Iterator by `n`.
+    /// @param n
+    /// @return `RandomAccessIterator` reference.
+    RandomAccessIterator& operator-=(difference_type n) {
+        ptr_ -= n;
+        return *this;
+    }
+
     /// @brief Addition. Sum of RandomAccessIterator of a and b.
     /// @param a
     /// @param b
