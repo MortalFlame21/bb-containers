@@ -21,8 +21,17 @@ TEST_CASE("Default construction is an empty list", "[list]") {
     REQUIRE(l.empty());
 }
 
-// TEST_CASE("Explicit size creates size lengthed list of default values", "") {
-// }
+TEST_CASE("Explicit size creates size lengthed list of default values", "[list]") {
+    // GIVEN
+    bb::List<int> l(5);
+
+    // THEN
+    REQUIRE(l.size() == 5);
+    REQUIRE(l.str() == "0 0 0 0 0 ");
+
+    // TODO
+    REQUIRE_THAT(l, Catch::Matchers::RangeEquals({0, 0, 0, 0, 0}));
+}
 
 // TEST_CASE("", "") {
 
