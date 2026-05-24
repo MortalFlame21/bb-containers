@@ -8,10 +8,13 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(Catch2)
 
-add_executable(container_tests Vector.cpp)
+add_executable(container_tests
+  Vector.cpp
+  List.cpp
+)
 target_link_libraries(container_tests PRIVATE Catch2::Catch2WithMain)
 target_include_directories(container_tests PRIVATE ${CMAKE_SOURCE_DIR}/include)
 
 include(CTest)
 include(Catch)
-catch_discover_tests(container_tests)
+catch_discover_tests(container_tests ADD_TAGS_AS_LABELS)
