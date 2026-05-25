@@ -27,10 +27,17 @@ TEST_CASE("Explicit size creates size lengthed list of default values", "[list]"
 
     // THEN
     REQUIRE(l.size() == 5);
-    REQUIRE(l.str() == "0 0 0 0 0 ");
-
-    // TODO
     REQUIRE_THAT(l, Catch::Matchers::RangeEquals({0, 0, 0, 0, 0}));
+
+}
+
+TEST_CASE("Explicit size with value creates sized lengthed list of values", "[list]") {
+    // GIVEN
+    bb::List<int> l(3, 100);
+
+    // THEN
+    REQUIRE(l.size() == 3);
+    REQUIRE_THAT(l, Catch::Matchers::RangeEquals({100, 100, 100}));
 }
 
 // TEST_CASE("", "") {

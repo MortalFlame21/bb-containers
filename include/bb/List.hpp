@@ -8,14 +8,32 @@ namespace bb {
 template<typename T>
 class List {
 public:
+    class Node;
+
     // type alias's
     using value_type = T;
     using reference = T&;
     using const_reference = const T&;
-    using iterator = BidirectionIterator<T>;
+    using iterator = BidirectionIterator<Node>;
     using const_iterator = iterator const;
     using difference_type = std::ptrdiff_t;
     using size_type = std::size_t;
+
+    class Node {
+    public:
+        using value_type = T;
+
+        value_type value_{};
+        Node* prev_{};
+        Node* next_{};
+
+        Node() = default;
+
+        explicit Node(value_type v) : value_{v} { }
+
+        Node(value_type v, Node* prev, Node* next)
+            : value_{v}, prev_{prev}, next_{next} { }
+    };
 
     // ctor and dtor
     /// @brief Default constructor
@@ -102,22 +120,7 @@ public:
     }
 
 private:
-    class Node {
-    public:
-        value_type value_{};
-        Node* prev_{};
-        Node* next_{};
-
-        Node() = default;
-
-        explicit Node(value_type v) : value_{v} { }
-
-        Node(value_type v, Node* prev, Node* next)
-            : value_{v}, prev_{prev}, next_{next} { }
-    };
-
     Node* sentinel_{};
     size_type sz_{};
 };
-
 } // namespace bb
