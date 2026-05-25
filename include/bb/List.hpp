@@ -52,8 +52,7 @@ public:
     List(size_type count, const value_type& v)
         : List()
     {
-        for (; count != 0; --count)
-            push_back(v);
+        std::fill_n(std::back_inserter(*this), count, v);
     }
 
     /// @brief Initialise List with contents of `list`.
@@ -61,8 +60,22 @@ public:
     List(std::initializer_list<value_type> list)
         : List()
     {
-        for (const auto& e : list)
-            push_back(e);
+        std::copy(list.begin(), list.end(), std::back_inserter(*this));
+    }
+
+    List(const List& other) : List() {
+        std::copy(other.begin(), other.end(), std::back_inserter(*this));
+    }
+
+    List& operator=(const List& other) {
+        if (this != &other) {
+            // kinda delegate
+            sentinel_->prev_ = sentinel_;
+            sentinel_->next_ = sentinel_;
+
+            std::copy(other.begin(), other.end(), std::back_inserter(*this));
+        }
+        return *this;
     }
 
     // iterators
@@ -70,9 +83,17 @@ public:
     /// @return Return begin iterator of the List container.
     iterator begin() { return iterator{sentinel_->next_}; }
 
+    /// @brief Const begin iterator access.
+    /// @return Return const begin iterator of the List container.
+    const_iterator begin() const { return iterator{sentinel_->next_}; }
+
     /// @brief End iterator access.
     /// @return Return end iterator of the List container.
     iterator end() { return iterator{sentinel_}; }
+
+    /// @brief Const end iterator access.
+    /// @return Return const end iterator of the List container.
+    const_iterator end() const { return iterator{sentinel_}; }
 
     // size
     /// @brief Return the size of the List.
