@@ -123,12 +123,12 @@ public:
     bool empty() { return sz_ == 0; }
 
     // modifiers
-    void push_front() {
-    //     Node* n{new Node{v, sentinel_->prev_, sentinel_}};
-    //     // update begin node prev and begin node to be n
-    //     sentinel_->next_->prev_ = n;
-    //     sentinel_->next_ = n;
-    //     ++sz_;
+    void push_front(const T& v) {
+        Node* n{new Node{v, sentinel_, sentinel_->next_}};
+        // update begin node prev and begin node to be n
+        sentinel_->next_->prev_ = n;
+        sentinel_->next_ = n;
+        ++sz_;
     }
 
     void push_back(const T& v) {

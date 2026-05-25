@@ -111,3 +111,39 @@ TEST_CASE("Clearing a list empties elements", "[list]") {
     REQUIRE(l.empty());
     REQUIRE(l.begin() == l.end());
 }
+
+TEST_CASE("Inserting element at front of empty list increases size", "[list]") {
+    // GIVEN
+    bb::List<int> l{};
+
+    // WHEN
+    l.push_front(3);
+
+    // THEN
+    REQUIRE_THAT(l, Catch::Matchers::RangeEquals({3}));
+
+    // WHEN
+    l.push_front(2);
+    l.push_front(1);
+
+    // THEN
+    REQUIRE_THAT(l, Catch::Matchers::RangeEquals({1, 2, 3}));
+}
+
+TEST_CASE("Inserting element at back of list inserts element in correct order", "[list]") {
+    // GIVEN
+    bb::List<int> l{1, 2, 3};
+
+    // WHEN
+    l.push_back(4);
+
+    // THEN
+    REQUIRE_THAT(l, Catch::Matchers::RangeEquals({1, 2, 3, 4}));
+
+    // WHEN
+    l.push_back(4);
+    l.push_back(5);
+
+    // THEN
+    REQUIRE_THAT(l, Catch::Matchers::RangeEquals({1, 2, 3, 4, 4, 5}));
+}
