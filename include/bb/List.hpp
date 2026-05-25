@@ -69,13 +69,31 @@ public:
 
     List& operator=(const List& other) {
         if (this != &other) {
-            // kinda delegate
-            sentinel_->prev_ = sentinel_;
-            sentinel_->next_ = sentinel_;
+            clear();
 
             std::copy(other.begin(), other.end(), std::back_inserter(*this));
         }
         return *this;
+    }
+
+    List(List&& other) noexcept : List() {
+        std::swap(sentinel_, other.sentinel_);
+        std::swap(sz_, other.sz_);
+    }
+
+    List& operator=(List&& other) noexcept {
+        if (this != &other) {
+            clear();
+
+            std::swap(sentinel_, other.sentinel_);
+            std::swap(sz_, other.sz_);
+        }
+        return *this;
+    }
+
+    ~List() {
+        clear();
+        delete sentinel_;
     }
 
     // iterators
@@ -129,19 +147,18 @@ public:
 
     void erase() {}
 
-    void clear() {}
-
-    // temp for now
-    std::string str() {
-        std::string s{};
-        for (auto i{sentinel_->next_}; i != sentinel_; i = i->next_) {
-            s += std::to_string(i->value_) + " ";
+    void clear() {
+        for (auto i{sentinel_->next_}; i != sentinel_;) {
+            auto next{i->next_};
+            delete i;
+            i = next;
         }
-        return s;
+        sentinel_->prev_ = sentinel_;
+        sentinel_->next_ = sentinel_;
+        sz_ = 0;
     }
-
 private:
     Node* sentinel_{};
     size_type sz_{};
 };
-} // namespace bb
+} // namespace

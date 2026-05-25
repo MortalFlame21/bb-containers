@@ -56,11 +56,58 @@ TEST_CASE("Copy constructor on list are different objects", "[list]") {
 TEST_CASE("Copy assignment on copies all elements", "[list]") {
     // GIVEN
     bb::List<int> ls(3, 100);
-    bb::List<int> ld{};
+    bb::List<int> ld{1, 2, 3};
 
     // WHEN
     ld = ls;
 
+    // THEN
     REQUIRE(ls.begin() != ld.begin());
 	REQUIRE_THAT(ld, Catch::Matchers::RangeEquals(ls));
+}
+
+TEST_CASE("Move construct on list invalidates source", "[list]") {
+    // GIVEN
+    bb::List<int> ls(5, 10);
+    auto beg{ls.begin()};
+
+    // WHEN
+    bb::List<int> ld{std::move(ls)};
+
+    // THEN
+    REQUIRE(ld.begin() == beg);
+    REQUIRE(ld.begin() != ls.begin());
+    REQUIRE(ls.empty());
+	REQUIRE_THAT(ld, Catch::Matchers::RangeEquals({10, 10, 10, 10, 10}));
+}
+
+TEST_CASE("Move assignment on list invalidates old elements", "[list]") {
+    // GIVEN
+    bb::List<int> ls{1, 2, 3, 4, 5};
+    auto beg_ls{ls.begin()};
+
+    bb::List<int> ld{420, 69, 21};
+    auto beg_ld{ld.begin()};
+
+    // WHEN
+    ld = std::move(ls);
+
+    // THEN
+    REQUIRE(ld.begin() == beg_ls);
+    REQUIRE(ld.begin() != beg_ld);
+    REQUIRE(ld.begin() != ls.begin());
+    REQUIRE(ls.empty());
+	REQUIRE_THAT(ld, Catch::Matchers::RangeEquals({1, 2, 3, 4, 5}));
+}
+
+TEST_CASE("Clearing a list empties elements", "[list]") {
+    // GIVEN
+    bb::List<int> l{1, 2, 3, 4, 5};
+
+    // WHEN
+    l.clear();
+
+    // THEN
+    REQUIRE(l.empty());
+    REQUIRE(l.begin() == l.end());
 }
