@@ -120,33 +120,58 @@ public:
 
     /// @brief Returns whether List is empty.
     /// @return Return bool whether List is empty.
-    bool empty() { return sz_ == 0; }
+    bool empty() { return begin() == iterator{sentinel_}; }
 
     // modifiers
+    /// @brief Push element `v` in begining of list.
+    /// @param v
     void push_front(const T& v) {
-        Node* n{new Node{v, sentinel_, sentinel_->next_}};
+        auto* n{new Node{v, sentinel_, sentinel_->next_}};
         // update begin node prev and begin node to be n
         sentinel_->next_->prev_ = n;
         sentinel_->next_ = n;
         ++sz_;
     }
 
+    /// @brief Push element `v` in back of list.
+    /// @param v
     void push_back(const T& v) {
-        Node* n{new Node{v, sentinel_->prev_, sentinel_}};
+        auto* n{new Node{v, sentinel_->prev_, sentinel_}};
         // update last node next and last node to be n
         sentinel_->prev_->next_ = n;
         sentinel_->prev_ = n;
         ++sz_;
     }
 
-    void pop_front() {}
+    /// @brief Remove begining element from List.
+    void pop_front() {
+        if (empty())
+            throw std::out_of_range{"List::pop_back: List::empty == true"};
 
-    void pop_back() {}
+        auto* front{sentinel_->next_};
+        sentinel_->next_ = front->next_;
+        front->next_->prev_ = sentinel_;
+        delete front;
+        --sz_;
+    }
+
+    /// @brief Remove last element from List.
+    void pop_back() {
+        if (empty())
+            throw std::out_of_range{"List::pop_back: List::empty == true"};
+
+        auto* back{sentinel_->prev_};
+        sentinel_->prev_ = back->prev_;
+        back->prev_->next_ = sentinel_;
+        delete back;
+        --sz_;
+    }
 
     void insert() {}
 
     void erase() {}
 
+    /// @brief Clear contents of List, freeing space occupied.
     void clear() {
         for (auto i{sentinel_->next_}; i != sentinel_;) {
             auto next{i->next_};
