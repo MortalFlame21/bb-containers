@@ -147,3 +147,40 @@ TEST_CASE("Inserting element at back of list inserts element in correct order", 
     // THEN
     REQUIRE_THAT(l, Catch::Matchers::RangeEquals({1, 2, 3, 4, 4, 5}));
 }
+
+TEST_CASE("Pop element from back removes last element and decreases size", "[list]") {
+    // GIVEN
+    bb::List<int> l{1, 2, 3};
+
+    // WHEN
+    l.pop_back();
+    l.pop_back();
+
+    // THEN
+    REQUIRE(l.size() == 1);
+    REQUIRE_THAT(l, Catch::Matchers::RangeEquals({1}));
+
+    // WHEN
+    l.pop_back();
+
+    // THEN
+    REQUIRE(l.empty());
+}
+
+TEST_CASE("Pop element from front removes correct element", "[list]") {
+    // GIVEN
+    bb::List<int> l{1, 2};
+
+    // WHEN
+    l.pop_back();
+
+    // THEN
+    REQUIRE_THAT(l, Catch::Matchers::RangeEquals({1}));
+
+    // WHEN
+    l.pop_back();
+
+    // WHEN and THEN
+    REQUIRE(l.empty());
+    REQUIRE_THROWS_AS(l.pop_back(), std::out_of_range);
+}
