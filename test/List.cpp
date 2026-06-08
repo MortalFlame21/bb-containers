@@ -184,3 +184,52 @@ TEST_CASE("Pop element from front removes correct element", "[list]") {
     REQUIRE(l.empty());
     REQUIRE_THROWS_AS(l.pop_back(), std::out_of_range);
 }
+
+TEST_CASE("Inserting a element between a existing List inserts correctly", "[list]") {
+    // GIVEN
+    bb::List<int> l{1, 2, 4, 5};
+
+    auto it{l.begin()};
+    ++it; ++it; // it + 2 (before 4)
+
+    // WHEN
+    l.insert(it, 3);
+
+    // THEN
+    REQUIRE_THAT(l, Catch::Matchers::RangeEquals({1, 2, 3, 4, 5}));
+}
+
+TEST_CASE("Inserting at a empty List increases size", "[list]") {
+    // GIVEN
+    bb::List<int> l{};
+    REQUIRE(l.empty());
+
+    // WHEN
+    l.insert(l.begin(), 1);
+
+    // THEN
+    REQUIRE_THAT(l, Catch::Matchers::RangeEquals({1}));
+
+    // WHEN
+    l.insert(l.begin(), 0);
+    l.insert(l.begin(), -1);
+
+    // THEN
+    REQUIRE_THAT(l, Catch::Matchers::RangeEquals({-1, 0, 1}));
+}
+
+TEST_CASE("Erasing at a empty List does nothing", "[list]") {
+
+}
+
+TEST_CASE("Erasing element from a List removes item", "[list]") {
+    // GIVEN
+    bb::List<int> l{1, 2, 3, 4, 5};
+
+    // WHEN
+    l.erase(l.begin());
+    l.erase(l.begin());
+
+    // THEN
+    REQUIRE_THAT(l, Catch::Matchers::RangeEquals({3, 4, 5}));
+}
