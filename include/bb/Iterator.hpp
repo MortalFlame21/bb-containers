@@ -18,6 +18,10 @@ class OutputIterator { };
 template<typename T>
 class BidirectionIterator {
 public:
+    // friend classes
+    template<typename U>
+    friend class List;
+
     // type alias
     using iterator_category = std::bidirectional_iterator_tag;
     using value_type = T::value_type;
@@ -37,10 +41,6 @@ public:
     /// @brief Dereference operator.
     /// @return `reference`
     reference operator*() { return ptr_->value_; }
-
-    /// @brief Address-of operator.
-    /// @return `pointer`
-    pointer operator&() { return ptr_; }
 
     /// @brief Arrow operator.
     /// @return `pointer`
@@ -62,7 +62,7 @@ public:
 
     /// @brief Post-increment operator.
     /// @return `BidirectionalIterator` reference to next node.
-    BidirectionIterator& operator++(int) {
+    BidirectionIterator operator++(int) {
         BidirectionIterator tmp{*this};
         ptr_ = ptr_->next_;
         return tmp;
@@ -70,7 +70,7 @@ public:
 
     /// @brief Post-increment operator.
     /// @return `BidirectionalIterator` reference to previous node.
-    BidirectionIterator& operator--(int) {
+    BidirectionIterator operator--(int) {
         BidirectionIterator tmp{*this};
         ptr_ = ptr_->prev_;
         return tmp;
