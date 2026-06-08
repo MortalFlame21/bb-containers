@@ -38,6 +38,10 @@ public:
     /// @return `reference`
     reference operator*() { return ptr_->value_; }
 
+    /// @brief Address-of operator.
+    /// @return `pointer`
+    pointer operator&() { return ptr_; }
+
     /// @brief Arrow operator.
     /// @return `pointer`
     pointer operator->() const { return ptr_; }
