@@ -167,9 +167,27 @@ public:
         --sz_;
     }
 
-    void insert() {}
+    /// @brief Insert `v` before `pos` in List container.
+    void insert(iterator pos, const T& v) {
+        // wack, but i need to move on from this
+        if (empty()) {
+            push_back(v);
+            return;
+        }
 
-    void erase() {}
+        auto* n{new Node(v, pos->prev_, pos.ptr_)};
+        pos->prev_->next_ = n;
+        pos->prev_ = n;
+        ++sz_;
+    }
+
+    /// @brief Erase element at `pos` in List container.
+    void erase(iterator pos) {
+        if (empty()) return;
+        std::swap(pos->prev_, pos->next_);
+        // delete &*pos;
+        --sz_;
+    }
 
     /// @brief Clear contents of List, freeing space occupied.
     void clear() {
