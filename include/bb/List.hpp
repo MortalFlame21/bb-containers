@@ -184,8 +184,11 @@ public:
     /// @brief Erase element at `pos` in List container.
     void erase(iterator pos) {
         if (empty()) return;
-        std::swap(pos->prev_, pos->next_);
-        // delete &*pos;
+
+        pos->next_->prev_ = pos->prev_;
+        pos->prev_->next_ = pos->next_;
+        delete pos.ptr_;
+
         --sz_;
     }
 

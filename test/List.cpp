@@ -219,7 +219,14 @@ TEST_CASE("Inserting at a empty List increases size", "[list]") {
 }
 
 TEST_CASE("Erasing at a empty List does nothing", "[list]") {
+    // GIVEN
+    bb::List<int> l{};
 
+    // WHEN
+    l.erase(l.begin());
+
+    // THEN
+    REQUIRE(l.empty());
 }
 
 TEST_CASE("Erasing element from a List removes item", "[list]") {
@@ -232,4 +239,18 @@ TEST_CASE("Erasing element from a List removes item", "[list]") {
 
     // THEN
     REQUIRE_THAT(l, Catch::Matchers::RangeEquals({3, 4, 5}));
+}
+
+TEST_CASE("Erasing element from middle of list removes item correctly", "[list]") {
+    // GIVEN
+    bb::List<int> l{1, 2, 3, 4, 5};
+
+    auto it{l.begin()};
+    ++it; ++it; // it + 2 (before 4)
+
+    // WHEN
+    l.erase(it);
+
+    // THEN
+    REQUIRE_THAT(l, Catch::Matchers::RangeEquals({1, 2, 4, 5}));
 }
