@@ -192,6 +192,17 @@ public:
         --sz_;
     }
 
+    /// @brief Erases elements in range [`f`, `l`) at List container.
+    /// @param f
+    /// @param l
+    void erase(iterator f, iterator l) {
+        while (f != l) {
+            auto old{f};
+            erase(old);
+            ++f;
+        }
+    }
+
     /// @brief Clear contents of List, freeing space occupied.
     void clear() {
         for (auto i{sentinel_->next_}; i != sentinel_;) {
