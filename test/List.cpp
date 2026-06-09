@@ -254,3 +254,33 @@ TEST_CASE("Erasing element from middle of list removes item correctly", "[list]"
     // THEN
     REQUIRE_THAT(l, Catch::Matchers::RangeEquals({1, 2, 4, 5}));
 }
+
+TEST_CASE("Erasing elements within a range removes item correctly", "[list]") {
+    SECTION("Range erase reduces list from [first, last)", "[list]") {
+        // GIVEN
+        bb::List<int> l{1, 2, 3, 4, 5};
+
+        auto end{l.begin()};
+        ++end; ++end; // 3
+
+        // WHEN
+        l.erase(l.begin(), end);
+
+        // THEN
+        REQUIRE_THAT(l, Catch::Matchers::RangeEquals({3, 4, 5}));
+    }
+
+    SECTION("Range erase from middle to and reduces list size", "[list]") {
+        // GIVEN
+        bb::List<int> l{1, 2, 3, 4, 5};
+
+        auto mid{l.begin()};
+        ++mid; ++mid; // 3
+
+        // WHEN
+        l.erase(mid, l.end());
+
+        // THEN
+        REQUIRE_THAT(l, Catch::Matchers::RangeEquals({1, 2}));
+    }
+}
