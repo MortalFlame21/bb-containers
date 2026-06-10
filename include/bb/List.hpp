@@ -198,22 +198,28 @@ public:
     }
 
     /// @brief Erase element at `pos` in List container.
-    void erase(iterator pos) {
-        if (empty()) return;
+    /// @return A iterator to
+    iterator erase(iterator pos) {
+        if (empty()) return end();
 
         pos->next_->prev_ = pos->prev_;
         pos->prev_->next_ = pos->next_;
+        auto it{iterator{pos->next_}}; // save it, ugh
         delete pos.ptr_;
 
         --sz_;
+
+        return it;
     }
 
     /// @brief Erases elements in range [`f`, `l`) at List container.
     /// @param f
     /// @param l
-    void erase(iterator f, iterator l) {
+    /// @return A iterator after range [f, l)
+    iterator erase(iterator f, iterator l) {
         while (f != l)
-            erase(f++);
+            f = erase(f);
+        return f;
     }
 
     /// @brief Clear contents of List, freeing space occupied.
