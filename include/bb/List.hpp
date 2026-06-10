@@ -168,17 +168,33 @@ public:
     }
 
     /// @brief Insert `v` before `pos` in List container.
-    void insert(iterator pos, const T& v) {
+    /// @param pos
+    /// @param v
+    /// @return Iterator pointing inserted v.
+    iterator insert(iterator pos, const T& v) {
         // wack, but i need to move on from this
         if (empty()) {
             push_back(v);
-            return;
+            return begin();
         }
 
         auto* n{new Node(v, pos->prev_, pos.ptr_)};
         pos->prev_->next_ = n;
         pos->prev_ = n;
         ++sz_;
+
+        return iterator{n};
+    }
+
+    /// @brief Insert `count` `v` elements before `pos` in List container.
+    /// @param pos
+    /// @param count
+    /// @param v
+    /// @return An iterator pointing to first element inserted before pos.
+    iterator insert(iterator pos, size_type count, const T& v) {
+        for (size_type i{}; i < count; ++i)
+            pos = insert(pos, v);
+        return pos;
     }
 
     /// @brief Erase element at `pos` in List container.
@@ -196,11 +212,8 @@ public:
     /// @param f
     /// @param l
     void erase(iterator f, iterator l) {
-        while (f != l) {
-            auto old{f};
-            erase(old);
-            ++f;
-        }
+        while (f != l)
+            erase(f++);
     }
 
     /// @brief Clear contents of List, freeing space occupied.

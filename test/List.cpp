@@ -218,6 +218,18 @@ TEST_CASE("Inserting at a empty List increases size", "[list]") {
     REQUIRE_THAT(l, Catch::Matchers::RangeEquals({-1, 0, 1}));
 }
 
+TEST_CASE("Inserting elements via count increases size by count", "[list]") {
+    // GIVEN
+    bb::List l{1, 3};
+
+    // WHEN
+    l.insert(--l.end(), 3, 2);
+
+    // THEN
+    REQUIRE(l.size() == 5);
+    REQUIRE_THAT(l, Catch::Matchers::RangeEquals({1, 2, 2, 2, 3}));
+}
+
 TEST_CASE("Erasing at a empty List does nothing", "[list]") {
     // GIVEN
     bb::List<int> l{};
