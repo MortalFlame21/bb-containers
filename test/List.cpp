@@ -190,7 +190,7 @@ TEST_CASE("Inserting a element between a existing List inserts correctly", "[lis
     bb::List<int> l{1, 2, 4, 5};
 
     auto it{l.begin()};
-    ++it; ++it; // it + 2 (before 4)
+    std::advance(it, 2);
 
     // WHEN
     l.insert(it, 3);
@@ -222,8 +222,11 @@ TEST_CASE("Inserting elements via count increases size by count", "[list]") {
     // GIVEN
     bb::List l{1, 3};
 
+    auto it{l.begin()};
+    std::advance(it, 1);
+
     // WHEN
-    l.insert(--l.end(), 3, 2);
+    l.insert(it, 3, 2);
 
     // THEN
     REQUIRE(l.size() == 5);
@@ -258,7 +261,7 @@ TEST_CASE("Erasing element from middle of list removes item correctly", "[list]"
     bb::List<int> l{1, 2, 3, 4, 5};
 
     auto it{l.begin()};
-    ++it; ++it; // it + 2 (before 4)
+    std::advance(it, 2);
 
     // WHEN
     l.erase(it);
@@ -273,7 +276,7 @@ TEST_CASE("Erasing elements within a range removes item correctly", "[list]") {
         bb::List<int> l{1, 2, 3, 4, 5};
 
         auto end{l.begin()};
-        ++end; ++end; // 3
+        std::advance(end, 2);
 
         // WHEN
         l.erase(l.begin(), end);
@@ -287,7 +290,7 @@ TEST_CASE("Erasing elements within a range removes item correctly", "[list]") {
         bb::List<int> l{1, 2, 3, 4, 5};
 
         auto mid{l.begin()};
-        ++mid; ++mid; // 3
+        std::advance(mid, 2);
 
         // WHEN
         l.erase(mid, l.end());
