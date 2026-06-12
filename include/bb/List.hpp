@@ -233,6 +233,25 @@ public:
         sentinel_->next_ = sentinel_;
         sz_ = 0;
     }
+
+    /// @brief Transfer other into *this before pos.
+    /// @param pos
+    /// @param other
+    /// @post other contents is transfer and thus emptied.
+    void splice(iterator pos, List& other) {
+        // wacky ahh implementation. ugh.
+        pos->prev_->next_ = other.begin().ptr_;
+        other.begin()->prev_ = pos->prev_;
+
+        // merge other to *this
+        std::prev(other.end())->next_ = pos.ptr_;
+        sz_ += other.sz_;
+
+        // clear out other
+        other.sentinel_->prev_ = other.sentinel_;
+        other.sentinel_->next_ = other.sentinel_;
+        other.sz_ = 0;
+    }
 private:
     Node* sentinel_{};
     size_type sz_{};
