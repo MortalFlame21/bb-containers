@@ -312,3 +312,25 @@ TEST_CASE("List splice tranfers all elements from other to *this", "[list]") {
     REQUIRE_THAT(l1, Catch::Matchers::RangeEquals({1, 2, 3, 4, 5, 6, 7, 8, 9, 10}));
     REQUIRE(l2.empty());
 }
+
+TEST_CASE("Element access returns correct element", "[list]") {
+    SECTION("An empty list returns front as back", "[list]") {
+        // GIVEN
+        bb::List<int> l{};
+
+        // THEN
+        REQUIRE(l.front() == l.back());
+    }
+
+    SECTION("A modified reference changes value", "[list]") {
+        // GIVEN
+        bb::List<int> l{2, 2, 3, 4, 4};
+
+        // WHEN
+        l.front() = 1;
+        l.back() = 5;
+
+        // THEN
+        REQUIRE_THAT(l, Catch::Matchers::RangeEquals({1, 2, 3, 4, 5}));
+    }
+}

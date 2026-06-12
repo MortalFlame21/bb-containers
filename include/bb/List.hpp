@@ -96,6 +96,23 @@ public:
         delete sentinel_;
     }
 
+    // element access
+    /// @brief First element reference access
+    /// @return reference to first element
+    reference front() { return *begin(); }
+
+    /// @brief First element reference access
+    /// @return const_reference to first element
+    const_reference front() const { return *begin(); }
+
+    /// @brief Last element reference access
+    /// @return reference to last element
+    reference back() { return *std::prev(end()); }
+
+    /// @brief Last element reference access
+    /// @return const_reference to last element
+    const_reference back() const { return *std::prev(end()); }
+
     // iterators
     /// @brief Begin iterator access.
     /// @return Return begin iterator of the List container.
@@ -234,6 +251,7 @@ public:
         sz_ = 0;
     }
 
+    // operations
     /// @brief Transfer other into *this before pos.
     /// @param pos
     /// @param other
