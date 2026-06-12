@@ -299,3 +299,16 @@ TEST_CASE("Erasing elements within a range removes item correctly", "[list]") {
         REQUIRE_THAT(l, Catch::Matchers::RangeEquals({1, 2}));
     }
 }
+
+TEST_CASE("List splice tranfers all elements from other to *this", "[list]") {
+    // GIVEN
+    bb::List<int> l1{1, 2, 3, 4, 5};
+    bb::List<int> l2{6, 7, 8, 9, 10};
+
+    // WHEN
+    l1.splice(l1.end(), l2);
+
+    // THEN
+    REQUIRE_THAT(l1, Catch::Matchers::RangeEquals({1, 2, 3, 4, 5, 6, 7, 8, 9, 10}));
+    REQUIRE(l2.empty());
+}
