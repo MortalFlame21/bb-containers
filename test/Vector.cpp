@@ -357,3 +357,25 @@ TEST_CASE("Erasing element positions removes elements correctly", "[vector]") {
     // THEN
     REQUIRE_THAT(v, Catch::Matchers::RangeEquals({1, 2, 3, 4, 5}));
 }
+
+TEST_CASE("Element access returns correct element", "[vector]") {
+    SECTION("A Vector of size 1 returns front as back", "[vector]") {
+        // GIVEN
+        bb::Vector<int> v{1};
+
+        // THEN
+        REQUIRE(v.front() == v.back());
+    }
+
+    SECTION("A modified reference changes value", "[vector]") {
+        // GIVEN
+        bb::Vector<int> v{2, 2, 3, 4, 4};
+
+        // WHEN
+        v.front() = 1;
+        v.back() = 5;
+
+        // THEN
+        REQUIRE_THAT(v, Catch::Matchers::RangeEquals({1, 2, 3, 4, 5}));
+    }
+}
