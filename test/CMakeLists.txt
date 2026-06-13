@@ -11,6 +11,7 @@ FetchContent_MakeAvailable(Catch2)
 add_executable(container_tests
   Vector.cpp
   List.cpp
+  HashTable.cpp
 )
 target_link_libraries(container_tests PRIVATE Catch2::Catch2WithMain)
 target_include_directories(container_tests PRIVATE ${CMAKE_SOURCE_DIR}/include)
