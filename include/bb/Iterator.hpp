@@ -13,9 +13,88 @@ class InputIterator { };
 template<typename T>
 class OutputIterator { };
 
-// TODO:
+/// @brief A bidirectional iterator.
+/// @tparam T. Typically a Node value type.
 template<typename T>
-class BidirectionIterator { };
+class BidirectionIterator {
+public:
+    // friend classes
+    template<typename U>
+    friend class List;
+
+    // type alias
+    using iterator_category = std::bidirectional_iterator_tag;
+    using value_type = T::value_type;
+    using pointer = T*;
+    using reference = T::value_type&;
+    using difference_type = std::ptrdiff_t;
+    using size_type = std::size_t;
+
+    // ctor
+    BidirectionIterator(pointer ptr) : ptr_{ptr} {};
+
+    // operations
+    /// @brief Dereference operator.
+    /// @return `value_type`
+    value_type operator*() const { return ptr_->value_; }
+
+    /// @brief Dereference operator.
+    /// @return `reference`
+    reference operator*() { return ptr_->value_; }
+
+    /// @brief Arrow operator.
+    /// @return `pointer`
+    pointer operator->() const { return ptr_; }
+
+    /// @brief Pre-increment operator.
+    /// @return `BidirectionalIterator` reference to next node.
+    BidirectionIterator& operator++() {
+        ptr_ = ptr_->next_;
+        return *this;
+    }
+
+    /// @brief Pre-decrement operator.
+    /// @return `BidirectionalIterator` reference to previous node.
+    BidirectionIterator& operator--() {
+        ptr_ = ptr_->prev_;
+        return *this;
+    }
+
+    /// @brief Post-increment operator.
+    /// @return `BidirectionalIterator` reference to next node.
+    BidirectionIterator operator++(int) {
+        BidirectionIterator tmp{*this};
+        ptr_ = ptr_->next_;
+        return tmp;
+    }
+
+    /// @brief Post-increment operator.
+    /// @return `BidirectionalIterator` reference to previous node.
+    BidirectionIterator operator--(int) {
+        BidirectionIterator tmp{*this};
+        ptr_ = ptr_->prev_;
+        return tmp;
+    }
+
+    /// @brief Equality of a and b.
+    /// @param a
+    /// @param b
+    /// @return `bool`. `true` if underlying pointers of `a` and `b` are the same.
+    friend bool operator==(const BidirectionIterator& a, const BidirectionIterator& b) {
+        return a.ptr_ == b.ptr_;
+    }
+
+    /// @brief Not equal a and b.
+    /// @param a
+    /// @param b
+    /// @return `bool`. `true` if underlying pointers of `a` and `b` are not the same.
+    friend bool operator!=(const BidirectionIterator& a, const BidirectionIterator& b) {
+        return !(a == b);
+    }
+
+private:
+    pointer ptr_{};
+};
 
 template<typename T>
 class RandomAccessIterator {
