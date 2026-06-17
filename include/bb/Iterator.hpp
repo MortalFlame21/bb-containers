@@ -5,6 +5,13 @@
 
 namespace bb {
 
+// forward declare
+template<typename T>
+class Vector;
+
+template<typename T>
+class List;
+
 // TODO:
 template<typename T>
 class InputIterator { };
@@ -12,6 +19,72 @@ class InputIterator { };
 // TODO:
 template<typename T>
 class OutputIterator { };
+
+/// @brief A forward iterator
+/// @tparam T
+template<typename T>
+class HashTableIterator {
+public:
+    // type alias
+    using iterator_category = std::bidirectional_iterator_tag;
+    using value_type = T;
+    using pointer = T*;
+    using reference = T&;
+    using difference_type = std::ptrdiff_t;
+    using size_type = std::size_t;
+
+    // custom
+    using chain_iter = List<value_type>::iterator;
+    using bucket_type = Vector<List<value_type>>::iterator;
+
+    HashTableIterator(chain_iter curr, chain_iter last, bucket_type bucket)
+        : curr_{curr}, last_{last}, bucket_{bucket} {}
+
+    // operations
+    /// @brief Dereference operator.
+    /// @return `value_type`
+    value_type operator*() const { return *curr_; }
+
+    /// @brief Dereference operator.
+    /// @return `reference`
+    reference operator*() { return *curr_; }
+
+    /// @brief Arrow operator.
+    /// @return `pointer`
+    pointer operator->() { return &(*curr_); }
+
+    /// @brief Pre-increment operator.
+    /// @return `HashTableIterator` reference to next node.
+    HashTableIterator& operator++() {
+        ++curr_;
+        if (curr_ == last_) {
+            ++bucket_;
+            curr_ = bucket_->begin();
+            last_ = bucket_->end();
+        }
+        return *this;
+    }
+
+    /// @brief Post-increment operator.
+    /// @return `HashTableIterator` reference to next node.
+    HashTableIterator operator++(int) {
+        HashTableIterator tmp{*this};
+        ++(*this);
+        return tmp;
+    }
+
+    /// @brief Equality of a and b.
+    /// @param a
+    /// @param b
+    /// @return `bool`. `true` if underlying pointers of `a` and `b` are the same.
+    friend bool operator==(const HashTableIterator& a, const HashTableIterator& b) {
+        return a.curr_ == b.curr_;
+    }
+private:
+    chain_iter curr_{};
+    chain_iter last_{};
+    bucket_type bucket_{};
+};
 
 /// @brief A bidirectional iterator.
 /// @tparam T. Typically a Node value type.
