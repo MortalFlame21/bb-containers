@@ -37,8 +37,13 @@ public:
     using chain_iter = List<value_type>::iterator;
     using bucket_iter = Vector<List<value_type>>::iterator;
 
-    HashTableIterator(chain_iter curr, chain_iter last, bucket_iter bucket)
-        : curr_{curr}, last_{last}, bucket_{bucket} {}
+    HashTableIterator(chain_iter curr, chain_iter last,
+            bucket_iter bucket_curr, bucket_iter bucket_end)
+        : curr_{curr}
+        , last_{last}
+        , bucket_curr_{bucket_curr}
+        , bucket_end_{bucket_end}
+    { }
 
     // operations
     /// @brief Dereference operator.
@@ -57,10 +62,11 @@ public:
     /// @return `HashTableIterator` reference to next node.
     HashTableIterator& operator++() {
         ++curr_;
-        if (curr_ == last_) {
-            ++bucket_;
-            curr_ = bucket_->begin();
-            last_ = bucket_->end();
+        while (curr_ == last_) {
+            ++bucket_curr_;
+            if (bucket_curr_ == bucket_end_) return *this;
+            curr_ = bucket_curr_->begin();
+            last_ = bucket_curr_->end();
         }
         return *this;
     }
@@ -77,13 +83,26 @@ public:
     /// @param a
     /// @param b
     /// @return `bool`. `true` if underlying pointers of `a` and `b` are the same.
+
     friend bool operator==(const HashTableIterator& a, const HashTableIterator& b) {
-        return a.curr_ == b.curr_;
+        // consider end buckets to be same, and same pos to be same.
+        const auto isAtEnd{a.bucket_curr_ == a.bucket_end_ && b.bucket_curr_ == b.bucket_end_};
+        const auto isAtSamePos{a.curr_ == b.curr_};
+        return isAtEnd || isAtSamePos;
+    }
+
+    /// @brief Not equal a and b.
+    /// @param a
+    /// @param b
+    /// @return `bool`. `true` if underlying pointers of `a` and `b` are not the same.
+    friend bool operator!=(const HashTableIterator& a, const HashTableIterator& b) {
+        return !(a == b);
     }
 private:
     chain_iter curr_{};
     chain_iter last_{};
-    bucket_iter bucket_{};
+    bucket_iter bucket_curr_{};
+    bucket_iter bucket_end_{};
 };
 
 /// @brief A bidirectional iterator.

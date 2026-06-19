@@ -40,32 +40,22 @@ public:
 
     /// @brief
     /// @return iterator to first element in bucket
-    iterator begin() {
-        if (empty()) return iterator(local_iterator{nullptr}, local_iterator{nullptr}, buckets_.begin());
-        return iterator((*chains_.begin())->begin(), (*chains_.begin())->end(), buckets_.begin());
-    }
-
     iterator begin() const {
-        if (empty()) return iterator(local_iterator{nullptr}, local_iterator{nullptr}, buckets_.begin());
-        return iterator((*chains_.begin())->begin(), (*chains_.begin())->end(), buckets_.begin());
+        auto it{buckets_.begin()};
+        while (it != buckets_.end() && it->empty())
+            ++it;
+        if (it == buckets_.end()) return end();
+        return iterator{it->begin(), it->end(), it, buckets_.end()};
     }
 
     /// @brief
     /// @return iterator past last element in bucket
-    iterator end() {
-        if (empty()) return iterator(local_iterator{nullptr}, local_iterator{nullptr}, buckets_.end());
-        return iterator((*std::prev(chains_.end()))->end(), (*std::prev(chains_.end()))->end(), buckets_.end());
-    }
-
-    iterator end() const {
-        if (empty()) return iterator(local_iterator{nullptr}, local_iterator{nullptr}, buckets_.end());
-        return iterator((*std::prev(chains_.end()))->end(), (*std::prev(chains_.end()))->end(), buckets_.end());
-    }
+    iterator end() const { return iterator{nullptr, nullptr, buckets_.end(), buckets_.end()}; }
 
     // capacity
 
     bool empty() const {
-        return size() == 0;
+        return begin() == end();
     }
 
     size_type size() const {
@@ -78,7 +68,7 @@ public:
     /// @param v
     /// @return Returns iterator to position of inserted v, bool if insert took place.
     std::pair<iterator, bool> insert(const value_type& v) {
-        bool inserted{};
+        auto notExists{true};
         auto h{hash(v.first)};
         auto& chain{buckets_[h]};
         iterator it{end()};
@@ -86,20 +76,19 @@ public:
         for (auto i{chain.begin()}; i != chain.end(); ++i) {
             if ((*i).first == v.first) {
                 (*i).second = v.second;
-                it = iterator{i, chain.end(), buckets_.begin() + h}; // dawg
+                it = iterator{i, chain.end(), buckets_.begin() + h, buckets_.end()};
+                notExists = false;
                 break;
             }
         }
 
-        if (!inserted) {
-            // brudda...
-            it = {chain.insert(chain.begin(), v), chain.end(), buckets_.begin() + h};
-            chains_[h] = &chain; // replace old chain, doesn't matter
-            inserted = true;
+        if (notExists) {
+            it = iterator{chain.insert(chain.begin(), v), chain.end(), buckets_.begin() + h,
+                buckets_.end()};
         }
 
         ++value_sz_;
-        return {it, inserted};
+        return {it, notExists};
     }
 
     // lookup
@@ -132,7 +121,7 @@ public:
         auto& chain{buckets_[hash(k)]};
         for (auto i{chain.begin()}; i != chain.end(); ++i) {
             if ((*i).first == k) {
-                it = iterator{i, chain.end(), buckets_.begin() + hash(k)};
+                it = iterator{i, chain.end(), buckets_.begin() + hash(k), buckets_.end()};
                 break;
             }
         }
@@ -174,7 +163,6 @@ private:
     // this could make begin be quicker?
 
     bb::Vector<bb::List<value_type>> buckets_{1}; // init with 1 bucket
-    bb::Vector<bb::List<value_type>*> chains_{1};
     size_type value_sz_{};
 };
 } // namespace bb
