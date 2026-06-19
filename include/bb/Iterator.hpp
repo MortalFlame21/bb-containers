@@ -35,9 +35,9 @@ public:
 
     // custom
     using chain_iter = List<value_type>::iterator;
-    using bucket_type = Vector<List<value_type>>::iterator;
+    using bucket_iter = Vector<List<value_type>>::iterator;
 
-    HashTableIterator(chain_iter curr, chain_iter last, bucket_type bucket)
+    HashTableIterator(chain_iter curr, chain_iter last, bucket_iter bucket)
         : curr_{curr}, last_{last}, bucket_{bucket} {}
 
     // operations
@@ -83,7 +83,7 @@ public:
 private:
     chain_iter curr_{};
     chain_iter last_{};
-    bucket_type bucket_{};
+    bucket_iter bucket_{};
 };
 
 /// @brief A bidirectional iterator.
