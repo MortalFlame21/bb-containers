@@ -28,17 +28,48 @@ public:
     // ctor and dtor
     HashTable() = default;
 
-    HashTable(std::initializer_list<const value_type> init)
-        : buckets_(init.size())
+    HashTable(std::initializer_list<const value_type> list)
+        : buckets_(list.size())
     {
-        for (const auto& vt : init) {
+        for (const auto& vt : list)
             insert(vt);
-        }
     };
+
+    HashTable(const HashTable& other)
+        : buckets_{other.buckets_}
+        , value_sz_{other.value_sz_}
+    { }
+
+    HashTable& operator=(const HashTable& other) {
+        if (this != &other) {
+            buckets_ = other.buckets_;
+            value_sz_ = other.value_sz_;
+        }
+        return *this;
+    }
+
+    HashTable(HashTable&& other)
+        : buckets_{other.buckets_}
+        , value_sz_{other.value_sz_}
+    {
+        other.buckets_ = {{}}; // init w 1 bucket
+        other.value_sz_ = 0;
+    }
+
+    HashTable& operator=(HashTable&& other) {
+        if (this != &other) {
+            buckets_ = other.buckets_;
+            value_sz_ = other.value_sz_;
+
+            other.buckets_ = {{}};
+            other.value_sz_ = 0;
+        }
+        return *this;
+    }
 
     // iterators
 
-    /// @brief
+    /// @brief Return begin iterator
     /// @return iterator to first element in bucket
     iterator begin() const {
         auto it{buckets_.begin()};
@@ -48,16 +79,20 @@ public:
         return iterator{it->begin(), it->end(), it, buckets_.end()};
     }
 
-    /// @brief
+    /// @brief Return end iterator
     /// @return iterator past last element in bucket
     iterator end() const { return iterator{nullptr, nullptr, buckets_.end(), buckets_.end()}; }
 
     // capacity
 
+    /// @brief Check if HashTable is empty
+    /// @return Bool if HashTable is empty
     bool empty() const {
         return begin() == end();
     }
 
+    /// @brief Check size of HashTable
+    /// @return Size of HashTable
     size_type size() const {
         return value_sz_;
     }
@@ -85,9 +120,9 @@ public:
         if (notExists) {
             it = iterator{chain.insert(chain.begin(), v), chain.end(), buckets_.begin() + h,
                 buckets_.end()};
+            ++value_sz_;
         }
 
-        ++value_sz_;
         return {it, notExists};
     }
 
@@ -106,7 +141,7 @@ public:
     /// @brief Access element of key_type k, or insert if not exist.
     /// @param k
     /// @return mapped_type reference.
-    mapped_type operator[](key_type k) {
+    mapped_type& operator[](key_type k) {
         if (auto it{find(k)}; it == end())
             return (*insert({k, mapped_type{}}).first).second;
         else
