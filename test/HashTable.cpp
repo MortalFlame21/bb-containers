@@ -78,7 +78,6 @@ TEST_CASE("Move constructor copies table correctly", "[hashtable]") {
     REQUIRE(ht1.bucket_count() == 1);
     REQUIRE(ht1.empty());
     REQUIRE(ht1.size() == 0);
-
     REQUIRE_THAT(ht2, Catch::Matchers::UnorderedRangeEquals({Pair{"john", "pork"}, Pair{"fort", "nite"}}));
 }
 
@@ -97,6 +96,59 @@ TEST_CASE("Move assignment copies table correctly", "[hashtable]") {
     REQUIRE(ht1.bucket_count() == 1);
     REQUIRE(ht1.empty());
     REQUIRE(ht1.size() == 0);
-
     REQUIRE_THAT(ht2, Catch::Matchers::UnorderedRangeEquals({Pair{"john", "pork"}, Pair{"fort", "nite"}}));
 }
+
+TEST_CASE("Insert increases size of HashTable", "[hashtable]") {
+    // GIVEN
+    bb::HashTable<std::string, std::string> ht{{"s420", "Steven"}};
+
+    // WHEN
+    ht.insert({"s069", "Tekashi"});
+
+    // THEN
+    REQUIRE(ht.size() == 2);
+    REQUIRE_THAT(ht, Catch::Matchers::UnorderedRangeEquals({Pair{"s420", "Steven"}, Pair{"s069", "Tekashi"}}));
+}
+
+TEST_CASE("Double insert returns false insert iterator pair value", "[hashtable]") {
+    // GIVEN
+    bb::HashTable<std::string, std::string> ht{};
+
+    // WHEN
+    auto p1{ht.insert({"a", "apple"})};
+    auto p2{ht.insert({"a", "apple"})};
+
+    // INSERT
+    REQUIRE(p1.first == p2.first);
+    REQUIRE(p1.second != p2.second);
+    REQUIRE(ht.size() == 1);
+}
+
+TEST_CASE("Insert increases load factor", "[hashtable]") {
+    // GIVEN
+    bb::HashTable<std::string, std::string> ht{};
+    auto lf{ht.load_factor()};
+
+    // WHEN
+    ht.insert({"a", "apple"});
+    ht.insert({"b", "banana"});
+
+    // INSERT
+    REQUIRE(ht.load_factor() > lf);
+}
+
+// TEST_CASE("Insert causing a load factor of 1 causes rehash of table", "[hashtable]") {
+// }
+
+// TEST_CASE("Finding existing key returns the correct iterator", "[hashtable]") {
+// }
+
+// TEST_CASE("Finding non-existing key returns the end iterator", "[hashtable]") {
+// }
+
+// TEST_CASE("Subscript indexing updates key value pair", "[hashtable]") {
+// }
+
+// TEST_CASE("Subscript indexing updates inserts", "[hashtable]") {
+// }

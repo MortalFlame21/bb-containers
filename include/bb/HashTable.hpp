@@ -178,6 +178,10 @@ public:
         return buckets_.size();
     }
 
+    size_type load_factor() const {
+        return size() / bucket_count();
+    }
+
     // local_iterator begin(size_type i) {
     //     return buckets[i].begin();
     // }
