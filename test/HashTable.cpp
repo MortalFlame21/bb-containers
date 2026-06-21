@@ -205,3 +205,39 @@ TEST_CASE("Subscript indexing updates inserts, increasing size", "[hashtable]") 
     REQUIRE_THAT(ht, Catch::Matchers::UnorderedRangeEquals({
         Pair{"NVDA", "NVIDIA"}, Pair{"AAPL", "Apple"}, Pair{"VOO", "Vanguard S&P 500 ETF"}}));
 }
+
+TEST_CASE("Ranged indexing throws error for non-existing key", "[hashtable]") {
+    // GIVEN
+    bb::HashTable<std::string, std::string> ht{
+        {"lol", "laugh out loud"},
+        {"goat", "greatest of all time"}
+    };
+
+    // WHEN and THEN
+    REQUIRE_THROWS_AS(ht.at("yn"), std::out_of_range);
+}
+
+TEST_CASE("Ranged indexing acts as subscripting for existing keys", "[hashtable]") {
+    // GIVEN
+    bb::HashTable<std::string, std::string> ht{
+        {"lol", "laugh out loud"},
+        {"goat", "garbage of all time"}
+    };
+
+    // WHEN
+    ht.at("goat") = "greatest of all time";
+
+    // THEN
+    REQUIRE(ht["goat"] == "greatest of all time");
+}
+
+TEST_CASE("Contain returns false for existing keys", "[hashtable]") {
+    // GIVEN
+    bb::HashTable<std::string, std::string> ht{
+        {"a1", "chicken fried rice"},
+        {"d4", "honey soy chicken"}
+    };
+
+    // WHEN and THEN
+    REQUIRE(!ht.contains("c3"));
+}
