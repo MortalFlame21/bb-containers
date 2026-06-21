@@ -138,12 +138,12 @@ public:
     /// @brief Access element of key_type k with range check.
     /// @param k
     /// @return mapped_type reference.
-    // mapped_type at(key_type k) {
-    //     if (auto it{find(k)}; it != end())
-    //         return *it;
-    //     else
-    //         throw std::out_of_range{"HashTable::at: key_type k does not exist."};
-    // }
+    mapped_type& at(key_type k) {
+        if (auto it{find(k)}; it != end())
+            return (*it).second;
+        else
+            throw std::out_of_range{"HashTable::at: key_type k does not exist."};
+    }
 
     /// @brief Access element of key_type k, or insert if not exist.
     /// @param k
@@ -173,9 +173,9 @@ public:
     /// @brief Checks if element of key_type k exists.
     /// @param k
     /// @return Return bool if element of key_type k exists.
-    // bool contains(const key_type k) const {
-    //     return find() != end();
-    // }
+    bool contains(const key_type k) const {
+        return find() != end();
+    }
 
     // bucket interface
 
@@ -185,25 +185,41 @@ public:
         return buckets_.size();
     }
 
+    /// @brief Return iterator to begining of i'th bucket
+    /// @param i
+    /// @return local_iterator of i'th bucket
+    local_iterator begin(size_type i) {
+        return buckets[i].begin();
+    }
 
-    // local_iterator begin(size_type i) {
-    //     return buckets[i].begin();
-    // }
-
-    // local_iterator end(size_type i) {
-    //     return buckets[i].end();
-    // }
+    /// @brief Return iterator to end of i'th bucket
+    /// @param i
+    /// @return local_iterator of i'th bucket
+    local_iterator end(size_type i) {
+        return buckets[i].end();
+    }
 
     // hash policy
 
+    /// @brief Return load factor of HashTable
+    /// @return Load factor of HashTable
     double load_factor() const {
         return size() / bucket_count();
     }
 
+    /// @brief Return max load factor of HashTable
+    /// @return Max load factor of HashTable
     double max_load_factor() const {
         return max_load_factor_;
     }
 
+    /// @brief Set max load factor of HashTable
+    void max_load_factor(const double& mlf) const {
+        max_load_factor_ = mlf;
+    }
+
+    /// @brief Rehash and reserve n buckets of HashTable
+    /// @param n
     void rehash(size_type n) {
         // n >= size() / max_load_factor();
         bucket_type new_bucket(std::max({n, static_cast<size_type>(size() / max_load_factor())}));
