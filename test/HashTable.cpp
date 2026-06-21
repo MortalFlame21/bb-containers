@@ -120,26 +120,29 @@ TEST_CASE("Double insert returns false insert iterator pair value", "[hashtable]
     auto p2{ht.insert({"a", "apple"})};
 
     // INSERT
-    REQUIRE(p1.first == p2.first);
+    REQUIRE(p1.second);
     REQUIRE(p1.second != p2.second);
     REQUIRE(ht.size() == 1);
 }
 
-TEST_CASE("Insert increases load factor", "[hashtable]") {
-    // GIVEN
+TEST_CASE("Insert causing a max load factor of 1 causes rehash of table", "[hashtable]") {
+    // WHEN
     bb::HashTable<std::string, std::string> ht{};
-    auto lf{ht.load_factor()};
 
     // WHEN
     ht.insert({"a", "apple"});
+
+    // THEN
+    REQUIRE(ht.bucket_count() == 1);
+    REQUIRE(ht.load_factor() == 1);
+
+    // WHEN
     ht.insert({"b", "banana"});
 
-    // INSERT
-    REQUIRE(ht.load_factor() > lf);
+    // THEN
+    REQUIRE(ht.load_factor() < 1);
+    REQUIRE_THAT(ht, Catch::Matchers::UnorderedRangeEquals({Pair{"a", "apple"}, Pair{"b", "banana"}}));
 }
-
-// TEST_CASE("Insert causing a load factor of 1 causes rehash of table", "[hashtable]") {
-// }
 
 // TEST_CASE("Finding existing key returns the correct iterator", "[hashtable]") {
 // }

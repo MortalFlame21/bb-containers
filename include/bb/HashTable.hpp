@@ -1,6 +1,7 @@
 #include <cstddef> // std::size_t, std::ptrdiff_t
 #include <initializer_list> // std::initializer_list
 #include <memory> // std::hash
+#include <algorithm> // std::max
 
 #include "Iterator.hpp"
 #include "List.hpp"
@@ -24,6 +25,8 @@ public:
     using hasher = H;
     using size_type = std::size_t;
     using difference_type = std::ptrdiff_t;
+
+    using bucket_type = bb::Vector<bb::List<value_type>>;
 
     // ctor and dtor
     HashTable() = default;
@@ -123,6 +126,10 @@ public:
             ++value_sz_;
         }
 
+        if (load_factor() > max_load_factor()) {
+            rehash(size() * 2);
+        }
+
         return {it, notExists};
     }
 
@@ -178,9 +185,6 @@ public:
         return buckets_.size();
     }
 
-    size_type load_factor() const {
-        return size() / bucket_count();
-    }
 
     // local_iterator begin(size_type i) {
     //     return buckets[i].begin();
@@ -189,6 +193,28 @@ public:
     // local_iterator end(size_type i) {
     //     return buckets[i].end();
     // }
+
+    // hash policy
+
+    double load_factor() const {
+        return size() / bucket_count();
+    }
+
+    double max_load_factor() const {
+        return max_load_factor_;
+    }
+
+    void rehash(size_type n) {
+        // n >= size() / max_load_factor();
+        bucket_type new_bucket(std::max({n, static_cast<size_type>(size() / max_load_factor())}));
+
+        for (const auto& mv : *this) {
+            auto h{hasher{}(mv.first) % new_bucket.size()};
+            new_bucket[h].insert(new_bucket[h].begin(), mv);
+        }
+
+        buckets_ = new_bucket;
+    }
 private:
 
     /// @brief Hash key_type k
@@ -201,7 +227,8 @@ private:
     // probably have member variable be an iterator/pointer to first element
     // this could make begin be quicker?
 
-    bb::Vector<bb::List<value_type>> buckets_{1}; // init with 1 bucket
+    bucket_type buckets_{1}; // init with 1 bucket
     size_type value_sz_{};
+    double max_load_factor_{1};
 };
 } // namespace bb
