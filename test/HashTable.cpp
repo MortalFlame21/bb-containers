@@ -125,8 +125,8 @@ TEST_CASE("Double insert returns false insert iterator pair value", "[hashtable]
     REQUIRE(ht.size() == 1);
 }
 
-TEST_CASE("Insert causing a max load factor of 1 causes rehash of table", "[hashtable]") {
-    // WHEN
+TEST_CASE("Insert causing a load factor equal or greater than max load factor causes rehash of table", "[hashtable]") {
+    // GIVEN
     bb::HashTable<std::string, std::string> ht{};
 
     // WHEN
@@ -135,6 +135,7 @@ TEST_CASE("Insert causing a max load factor of 1 causes rehash of table", "[hash
     // THEN
     REQUIRE(ht.bucket_count() == 1);
     REQUIRE(ht.load_factor() == 1);
+    REQUIRE(ht.load_factor() == ht.max_load_factor());
 
     // WHEN
     ht.insert({"b", "banana"});
@@ -144,14 +145,63 @@ TEST_CASE("Insert causing a max load factor of 1 causes rehash of table", "[hash
     REQUIRE_THAT(ht, Catch::Matchers::UnorderedRangeEquals({Pair{"a", "apple"}, Pair{"b", "banana"}}));
 }
 
-// TEST_CASE("Finding existing key returns the correct iterator", "[hashtable]") {
-// }
+TEST_CASE("Finding existing key returns the correct iterator", "[hashtable]") {
+    // GIVEN
+    bb::HashTable<std::string, std::string> ht{
+        {"VOO", "Vanguard S&P 500 ETF"},
+        {"VGT", "Vanguard Information Technology ETF"},
+    };
 
-// TEST_CASE("Finding non-existing key returns the end iterator", "[hashtable]") {
-// }
+    // WHEN
+    auto it{ht.find("VOO")};
 
-// TEST_CASE("Subscript indexing updates key value pair", "[hashtable]") {
-// }
+    // THEN
+    REQUIRE(it != ht.end());
+    REQUIRE(*it == Pair{"VOO", "Vanguard S&P 500 ETF"});
+}
 
-// TEST_CASE("Subscript indexing updates inserts", "[hashtable]") {
-// }
+TEST_CASE("Finding non-existing key returns the end iterator", "[hashtable]") {
+    bb::HashTable<std::string, std::string> ht{
+        {"NVDA", "NVIDIA"},
+        {"AAPL", "Apple"}
+    };
+
+    // WHEN
+    auto it{ht.find("VOO")};
+
+    // THEN
+    REQUIRE(it == ht.end());
+}
+
+TEST_CASE("Subscript indexing updates key value pair and does not add new pair", "[hashtable]") {
+    // GIVEN
+    bb::HashTable<std::string, std::string> ht{
+        {"NVDA", "NVIDIA"},
+        {"AAPL", "Appl"}
+    };
+
+    // WHEN
+    ht["AAPL"] += "e";
+
+    // THEN
+    REQUIRE(ht["AAPL"] == "Apple");
+    REQUIRE(ht.size() == 2);
+    REQUIRE_THAT(ht, Catch::Matchers::UnorderedRangeEquals({Pair{"NVDA", "NVIDIA"}, Pair{"AAPL", "Apple"}}));
+}
+
+TEST_CASE("Subscript indexing updates inserts, increasing size", "[hashtable]") {
+    // GIVEN
+    bb::HashTable<std::string, std::string> ht{
+        {"NVDA", "NVIDIA"},
+        {"AAPL", "Apple"}
+    };
+
+    // WHEN
+    ht["VOO"] = "Vanguard S&P 500 ETF";
+
+    // THEN
+    REQUIRE(ht.find("VOO") != ht.end());
+    REQUIRE(ht.size() == 3);
+    REQUIRE_THAT(ht, Catch::Matchers::UnorderedRangeEquals({
+        Pair{"NVDA", "NVIDIA"}, Pair{"AAPL", "Apple"}, Pair{"VOO", "Vanguard S&P 500 ETF"}}));
+}
