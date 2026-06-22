@@ -241,3 +241,44 @@ TEST_CASE("Contain returns false for existing keys", "[hashtable]") {
     // WHEN and THEN
     REQUIRE(!ht.contains("c3"));
 }
+
+TEST_CASE("Erase decreases size and correctly removes key value pair", "[hashtable]") {
+    // GIVEN
+    bb::HashTable<std::string, std::string> ht{{"and", "19"}, {"the", "21"}};
+
+    // WHEN
+    auto count{ht.erase("and")};
+
+    // THEN
+    REQUIRE(!ht.contains("and"));
+    REQUIRE(ht.find("and") == ht.end());
+    REQUIRE(ht.size() == 1);
+    REQUIRE(count == 1);
+    REQUIRE_THAT(ht, Catch::Matchers::UnorderedRangeEquals({Pair{"the", "21"}}));
+}
+
+TEST_CASE("Erasing a non-existing key does not erase element", "[hashtable]") {
+    // GIVEN
+    bb::HashTable<std::string, std::string> ht{{"and", "19"}, {"the", "21"}};
+
+    // WHEN
+    auto count{ht.erase("a")};
+
+    // THEN
+    REQUIRE(ht.size() == 2);
+    REQUIRE(count == 0);
+    REQUIRE_THAT(ht, Catch::Matchers::UnorderedRangeEquals(
+        {Pair{"and", "19"}, Pair{"the", "21"}}));
+}
+
+TEST_CASE("Erasing through begin iterator returns iterator equivalent to next key pair", "[hashtable]") {
+    // GIVEN
+    bb::HashTable<std::string, std::string> ht{{"a", "21"}, {"z", "11"}};
+
+    // WHEN
+    auto it{ht.erase(ht.begin())};
+
+    // THEN
+    REQUIRE(ht.size() == 1);
+    REQUIRE(it == ht.begin());
+}
