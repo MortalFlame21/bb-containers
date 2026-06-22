@@ -133,12 +133,33 @@ public:
         return {it, notExists};
     }
 
+    /// @brief Erase key value pair at pos
+    /// @param pos
+    /// @return An iterator that points to last element removed
+    iterator erase(iterator pos) {
+        pos.curr_ = (*pos.bucket_curr_).erase(pos.curr_);
+        if (pos.curr_ == pos.last_)
+            ++pos;
+        --value_sz_;
+        return pos;
+    }
+
+    /// @brief Erase key value pair with key_type k
+    /// @param k
+    /// @return Return 0 or 1 if element was removed
+    size_type erase(const key_type& k) {
+        auto it{find(k)};
+        if (it != end())
+            erase(it);
+        return it != end();
+    }
+
     // lookup
 
     /// @brief Access element of key_type k with range check.
     /// @param k
     /// @return mapped_type reference.
-    mapped_type& at(key_type k) {
+    mapped_type& at(const key_type& k) {
         if (auto it{find(k)}; it != end())
             return (*it).second;
         else
@@ -148,7 +169,7 @@ public:
     /// @brief Access element of key_type k, or insert if not exist.
     /// @param k
     /// @return mapped_type reference.
-    mapped_type& operator[](key_type k) {
+    mapped_type& operator[](const key_type& k) {
         if (auto it{find(k)}; it == end())
             return (*insert({k, mapped_type{}}).first).second;
         else
@@ -158,9 +179,9 @@ public:
     /// @brief Finds element of key_type to k.
     /// @param k
     /// @return Iterator to value of key k.
-    iterator find(const key_type k) {
+    iterator find(const key_type& k) const {
         iterator it{end()}; // end() means we didn't find it
-        auto& chain{buckets_[hash(k)]};
+        const auto& chain{buckets_[hash(k)]};
         for (auto i{chain.begin()}; i != chain.end(); ++i) {
             if ((*i).first == k) {
                 it = iterator{i, chain.end(), buckets_.begin() + hash(k), buckets_.end()};
@@ -173,8 +194,8 @@ public:
     /// @brief Checks if element of key_type k exists.
     /// @param k
     /// @return Return bool if element of key_type k exists.
-    bool contains(const key_type k) const {
-        return find() != end();
+    bool contains(const key_type& k) const {
+        return find(k) != end();
     }
 
     // bucket interface
@@ -189,14 +210,14 @@ public:
     /// @param i
     /// @return local_iterator of i'th bucket
     local_iterator begin(size_type i) {
-        return buckets[i].begin();
+        return buckets_[i].begin();
     }
 
     /// @brief Return iterator to end of i'th bucket
     /// @param i
     /// @return local_iterator of i'th bucket
     local_iterator end(size_type i) {
-        return buckets[i].end();
+        return buckets_[i].end();
     }
 
     // hash policy
@@ -214,8 +235,11 @@ public:
     }
 
     /// @brief Set max load factor of HashTable
-    void max_load_factor(const double& mlf) const {
-        max_load_factor_ = mlf;
+    /// @param mlf
+    void max_load_factor(const double& mlf) {
+        max_load_factor_ = std::max(mlf, 1.0);
+        if (load_factor() > max_load_factor_)
+            rehash();
     }
 
     /// @brief Rehash and reserve n buckets of HashTable
@@ -229,14 +253,14 @@ public:
             new_bucket[h].insert(new_bucket[h].begin(), mv);
         }
 
-        buckets_ = new_bucket;
+        buckets_ = std::move(new_bucket);
     }
 private:
 
     /// @brief Hash key_type k
     /// @param k
     /// @return A size_type between [0, size()).
-    size_type hash(key_type k) {
+    size_type hash(key_type k) const {
         return hasher{}(k) % buckets_.size();
     }
 

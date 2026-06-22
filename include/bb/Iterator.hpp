@@ -25,6 +25,10 @@ class OutputIterator { };
 template<typename T>
 class HashTableIterator {
 public:
+    // friend classes
+    template<typename K, typename _T, typename H>
+    friend class HashTable;
+
     // type alias
     using iterator_category = std::bidirectional_iterator_tag;
     using value_type = T;
